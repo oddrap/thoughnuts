@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(sh -s -- -y)",
+      "Bash(source \"$HOME/.cargo/env\")",
+      "Bash(cargo build:*)",
+      "Bash(cargo run:*)",
+      "Bash(open http://localhost:3000)",
+      "Bash(pkill:*)",
+      "Bash(export PATH=\"$HOME/.cargo/bin:$PATH\")",
+      "Bash(open http://localhost:3000/post/hello-web3)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

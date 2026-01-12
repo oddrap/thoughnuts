@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block description %}{{ description }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-16 sm:py-24 lg:py-32">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
+                Thoughnuts
+            </h1>
+            <p class="text-lg sm:text-xl text-primary-300 max-w-2xl mx-auto mb-8 leading-relaxed">
+                {{ description }}
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/posts" class="btn btn-primary px-6 py-3 rounded-lg text-base font-medium">
+                    Read Posts
+                </a>
+                <button onclick="openWalletModal()" class="btn btn-secondary px-6 py-3 rounded-lg text-base font-medium">
+                    Connect Wallet
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Posts -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <h2 class="text-xl sm:text-2xl font-semibold text-white mb-8">
+        Latest Posts
+    </h2>
+
+    {% if posts.is_empty() %}
+    <div class="text-center py-16 card p-8">
+        <p class="text-primary-300 mb-2">No posts found</p>
+        <p class="text-primary-400 text-sm">Check back soon for new content.</p>
+    </div>
+    {% else %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for post in posts %}
+        <article class="card p-6">
+            <div class="flex items-center gap-3 text-sm text-primary-400 mb-3">
+                <span>{{ post.created_at.format("%b %d, %Y") }}</span>
+                <span class="text-primary-600">·</span>
+                <span>{{ post.reading_time() }} min read</span>
+            </div>
+            <h3 class="text-lg font-semibold text-white mb-3 leading-snug">
+                <a href="/post/{{ post.slug }}" class="hover:text-blue-400 transition-colors">
+                    {{ post.title }}
+                </a>
+            </h3>
+            <p class="text-primary-300 text-sm mb-4 leading-relaxed line-clamp-3">
+                {{ post.description }}
+            </p>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-primary-400">{{ post.author }}</span>
+                <a href="/post/{{ post.slug }}" class="text-sm text-blue-400 hover:text-blue-300 font-medium">
+                    Read more →
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+
+<!-- Features Section -->
+<section class="bg-primary-900/50 py-16 sm:py-20 border-y border-primary-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-xl sm:text-2xl font-semibold text-white text-center mb-12">
+            Features
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <!-- Wallet Auth -->
+            <div class="card p-6">
+                <div class="text-2xl mb-4">🔐</div>
+                <h3 class="text-lg font-semibold text-white mb-2">Wallet Authentication</h3>
+                <p class="text-primary-300 text-sm leading-relaxed">
+                    Sign in with MetaMask or Phantom. No passwords needed.
+                </p>
+            </div>
+
+            <!-- Crypto Tipping -->
+            <div class="card p-6">
+                <div class="text-2xl mb-4">💰</div>
+                <h3 class="text-lg font-semibold text-white mb-2">Crypto Tips</h3>
+                <p class="text-primary-300 text-sm leading-relaxed">
+                    Support creators with ETH, SOL, or BTC directly.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

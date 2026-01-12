@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block description %}{{ post.description }}{% endblock %}
+
+{% block content %}
+<article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <!-- Post Header -->
+    <header class="mb-10 text-center">
+        <div class="flex items-center justify-center gap-3 text-sm text-primary-400 mb-4">
+            <span>{{ post.created_at.format("%b %d, %Y") }}</span>
+            <span class="text-primary-600">·</span>
+            <span>{{ post.reading_time() }} min read</span>
+        </div>
+
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">
+            {{ post.title }}
+        </h1>
+
+        <p class="text-lg text-primary-300 max-w-2xl mx-auto mb-6 leading-relaxed">
+            {{ post.description }}
+        </p>
+
+        <div class="text-primary-400">
+            By <span class="text-white font-medium">{{ post.author }}</span>
+        </div>
+
+        {% if !post.tags.is_empty() %}
+        <div class="flex flex-wrap justify-center gap-2 mt-6">
+            {% for tag in post.tags_list() %}
+            <span class="text-xs text-primary-300 bg-primary-800 px-3 py-1 rounded-full">
+                {{ tag }}
+            </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- Post Content -->
+    <div class="prose prose-invert max-w-none text-base text-primary-200 leading-relaxed mb-12">
+        {{ post.html_content|safe }}
+    </div>
+
+    <!-- Tipping Section -->
+    <section class="card p-8 text-center">
+        <h2 class="text-xl font-semibold text-white mb-2">Enjoyed this post?</h2>
+        <p class="text-primary-400 mb-6">
+            Support the author with a crypto tip
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+            {% if !author_eth_address.is_empty() %}
+            <button onclick="initTip('ethereum', {{ post.id }}, '{{ author_eth_address }}')" class="btn btn-secondary w-full sm:w-auto px-5 py-3 rounded-lg text-sm">
+                🔷 Tip with ETH
+            </button>
+            {% endif %}
+
+            {% if !author_sol_address.is_empty() %}
+            <button onclick="initTip('solana', {{ post.id }}, '{{ author_sol_address }}')" class="btn btn-secondary w-full sm:w-auto px-5 py-3 rounded-lg text-sm">
+                🟣 Tip with SOL
+            </button>
+            {% endif %}
+
+            {% if !author_btc_address.is_empty() %}
+            <button onclick="showBtcTip('{{ author_btc_address }}')" class="btn btn-secondary w-full sm:w-auto px-5 py-3 rounded-lg text-sm">
+                🟠 Tip with BTC
+            </button>
+            {% endif %}
+        </div>
+
+        <div class="text-xs text-primary-500 space-y-1 break-all">
+            {% if !author_eth_address.is_empty() %}
+            <p class="truncate">ETH: {{ author_eth_address }}</p>
+            {% endif %}
+            {% if !author_sol_address.is_empty() %}
+            <p class="truncate">SOL: {{ author_sol_address }}</p>
+            {% endif %}
+            {% if !author_btc_address.is_empty() %}
+            <p class="truncate">BTC: {{ author_btc_address }}</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Back Link -->
+    <div class="mt-12 text-center">
+        <a href="/" class="text-blue-400 hover:text-blue-300 font-medium">
+            ← Back to home
+        </a>
+    </div>
+</article>
+
+<!-- Tip Modal -->
+<div id="tipModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4">
+    <div class="card p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-white">Send Tip</h2>
+            <button onclick="closeTipModal()" class="text-primary-400 hover:text-white text-xl p-2 -mr-2">×</button>
+        </div>
+
+        <div id="tipChainInfo" class="mb-4 p-3 bg-primary-800 rounded-lg text-center">
+            <span id="tipChainName" class="text-sm font-medium text-white">Ethereum</span>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm text-primary-300 mb-2">Amount</label>
+                <div class="grid grid-cols-4 gap-2 mb-2">
+                    <button onclick="setTipAmount('0.001')" class="tip-amount-btn btn btn-secondary py-2 rounded text-sm">0.001</button>
+                    <button onclick="setTipAmount('0.005')" class="tip-amount-btn btn btn-secondary py-2 rounded text-sm">0.005</button>
+                    <button onclick="setTipAmount('0.01')" class="tip-amount-btn btn btn-secondary py-2 rounded text-sm">0.01</button>
+                    <button onclick="setTipAmount('0.1')" class="tip-amount-btn btn btn-secondary py-2 rounded text-sm">0.1</button>
+                </div>
+                <input type="number" id="tipAmount" step="0.001" min="0.001" value="0.01" class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <button onclick="sendTip()" id="sendTipBtn" class="w-full btn btn-primary py-3 rounded-lg font-medium">
+                Send Tip
+            </button>
+        </div>
+
+        <div id="tipStatus" class="mt-4 text-center text-sm hidden"></div>
+    </div>
+</div>
+
+<!-- Bitcoin Tip Modal -->
+<div id="btcModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4">
+    <div class="card p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-white">Tip with BTC</h2>
+            <button onclick="closeBtcModal()" class="text-primary-400 hover:text-white text-xl p-2 -mr-2">×</button>
+        </div>
+
+        <div class="text-center space-y-4">
+            <p class="text-sm text-primary-400">
+                Scan QR code or copy address
+            </p>
+
+            <!-- QR Code -->
+            <div class="flex justify-center">
+                <div id="btcQrCode" class="bg-white p-4 rounded-lg"></div>
+            </div>
+
+            <!-- Address with copy button -->
+            <div class="flex items-center gap-2 bg-primary-800 border border-primary-700 rounded-lg p-3">
+                <input type="text" id="btcAddressInput" readonly class="flex-1 bg-transparent text-sm text-primary-200 truncate border-0 focus:outline-none">
+                <button onclick="copyBtcAddress()" class="text-blue-400 hover:text-blue-300 p-2" title="Copy">
+                    <span id="copyIcon">📋</span>
+                    <span id="checkIcon" class="hidden">✓</span>
+                </button>
+            </div>
+
+            <p class="text-xs text-primary-500">
+                Send any amount of BTC to support
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+    let currentTipChain = 'ethereum';
+    let currentPostId = null;
+    let currentRecipient = null;
+    let currentBtcAddress = null;
+
+    function initTip(chain, postId, recipient) {
+        currentTipChain = chain;
+        currentPostId = postId;
+        currentRecipient = recipient;
+
+        document.getElementById('tipChainName').textContent = chain === 'ethereum' ? 'Ethereum (ETH)' : 'Solana (SOL)';
+        document.getElementById('tipModal').classList.remove('hidden');
+        document.getElementById('tipModal').classList.add('flex');
+    }
+
+    function closeTipModal() {
+        document.getElementById('tipModal').classList.add('hidden');
+        document.getElementById('tipModal').classList.remove('flex');
+        document.getElementById('tipStatus').classList.add('hidden');
+    }
+
+    function showBtcTip(address) {
+        currentBtcAddress = address;
+        document.getElementById('btcAddressInput').value = address;
+
+        const qrContainer = document.getElementById('btcQrCode');
+        qrContainer.innerHTML = '';
+        QRCode.toCanvas(address, { width: 180, margin: 2 }, function(error, canvas) {
+            if (!error) {
+                qrContainer.appendChild(canvas);
+            }
+        });
+
+        document.getElementById('btcModal').classList.remove('hidden');
+        document.getElementById('btcModal').classList.add('flex');
+    }
+
+    function closeBtcModal() {
+        document.getElementById('btcModal').classList.add('hidden');
+        document.getElementById('btcModal').classList.remove('flex');
+    }
+
+    function copyBtcAddress() {
+        const address = document.getElementById('btcAddressInput').value;
+        navigator.clipboard.writeText(address).then(() => {
+            document.getElementById('copyIcon').classList.add('hidden');
+            document.getElementById('checkIcon').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('copyIcon').classList.remove('hidden');
+                document.getElementById('checkIcon').classList.add('hidden');
+            }, 2000);
+        });
+    }
+
+    function setTipAmount(amount) {
+        document.getElementById('tipAmount').value = amount;
+        document.querySelectorAll('.tip-amount-btn').forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+        event.target.classList.remove('btn-secondary');
+        event.target.classList.add('btn-primary');
+    }
+
+    async function sendTip() {
+        const amount = document.getElementById('tipAmount').value;
+        const statusEl = document.getElementById('tipStatus');
+
+        if (!amount || parseFloat(amount) <= 0) {
+            statusEl.innerHTML = '<span class="text-red-400">Please enter a valid amount</span>';
+            statusEl.classList.remove('hidden');
+            return;
+        }
+
+        try {
+            statusEl.innerHTML = '<span class="text-blue-400">Processing...</span>';
+            statusEl.classList.remove('hidden');
+
+            const txHash = await sendCryptoTip(currentTipChain, currentRecipient, amount);
+
+            if (txHash) {
+                await fetch('/api/tips/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        post_id: currentPostId,
+                        from_address: window.connectedWallet?.address || 'unknown',
+                        amount: amount,
+                        currency: currentTipChain === 'ethereum' ? 'ETH' : 'SOL',
+                        chain: currentTipChain,
+                        tx_hash: txHash
+                    })
+                });
+
+                statusEl.innerHTML = '<span class="text-green-400">Tip sent! Thank you!</span>';
+                setTimeout(closeTipModal, 2000);
+            }
+        } catch (error) {
+            statusEl.innerHTML = `<span class="text-red-400">Error: ${error.message}</span>`;
+        }
+    }
+
+    document.getElementById('btcModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'btcModal') closeBtcModal();
+    });
+    document.getElementById('tipModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'tipModal') closeTipModal();
+    });
+</script>
+{% endblock %}

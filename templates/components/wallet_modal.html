@@ -1,0 +1,36 @@
+<div id="walletModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4">
+    <div id="walletModalContent" class="card p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-white">Connect Wallet</h2>
+            <button onclick="closeWalletModal()" class="text-primary-400 hover:text-white text-xl p-2 -mr-2">×</button>
+        </div>
+
+        <p class="text-sm text-primary-400 mb-6">
+            Select your wallet to authenticate and tip creators
+        </p>
+
+        <div class="space-y-3">
+            <!-- MetaMask -->
+            <button onclick="connectWallet('ethereum', 'metamask')" class="w-full btn btn-secondary p-4 rounded-lg flex items-center gap-4 text-left">
+                <div class="text-2xl">🦊</div>
+                <div>
+                    <div class="font-medium text-white">MetaMask</div>
+                    <div class="text-sm text-primary-400">Ethereum Network</div>
+                </div>
+            </button>
+
+            <!-- Phantom -->
+            <button onclick="connectWallet('solana', 'phantom')" class="w-full btn btn-secondary p-4 rounded-lg flex items-center gap-4 text-left">
+                <div class="text-2xl">👻</div>
+                <div>
+                    <div class="font-medium text-white">Phantom</div>
+                    <div class="text-sm text-primary-400">Solana Network</div>
+                </div>
+            </button>
+        </div>
+
+        <div id="walletStatus" class="mt-4 text-center text-sm hidden">
+            <span class="text-blue-400">Connecting...</span>
+        </div>
+    </div>
+</div>
