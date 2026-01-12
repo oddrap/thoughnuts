@@ -193,6 +193,9 @@ function updateWalletUI(address, chain) {
 
     btnText.textContent = `${chainIcon} ${shortAddress}`;
     btn.onclick = disconnectWallet;
+
+    // Dispatch event for other components
+    window.dispatchEvent(new Event('walletConnected'));
 }
 
 // Disconnect wallet
@@ -203,8 +206,11 @@ function disconnectWallet() {
     const btn = document.getElementById('connectWalletBtn');
     const btnText = document.getElementById('walletBtnText');
 
-    btnText.textContent = 'Connect Wallet';
+    btnText.textContent = 'Connect';
     btn.onclick = openWalletModal;
+
+    // Dispatch event for other components
+    window.dispatchEvent(new Event('walletConnected'));
 }
 
 // Send crypto tip
@@ -266,6 +272,8 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('connectedWallet');
         }
     }
+    // Dispatch event for initial state
+    window.dispatchEvent(new Event('walletConnected'));
 });
 
 // Close modal on backdrop click

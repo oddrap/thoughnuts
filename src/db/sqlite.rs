@@ -31,6 +31,15 @@ pub async fn get_post_by_slug(pool: &SqlitePool, slug: &str) -> Result<Option<Po
     Ok(post)
 }
 
+pub async fn increment_post_views(pool: &SqlitePool, slug: &str) -> Result<()> {
+    sqlx::query("UPDATE posts SET views = views + 1 WHERE slug = ?")
+        .bind(slug)
+        .execute(pool)
+        .await?;
+
+    Ok(())
+}
+
 pub async fn create_post(pool: &SqlitePool, post: &Post) -> Result<i64> {
     let result = sqlx::query(
         r#"

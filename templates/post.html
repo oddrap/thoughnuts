@@ -11,6 +11,8 @@
             <span>{{ post.created_at.format("%b %d, %Y") }}</span>
             <span class="text-primary-600">·</span>
             <span>{{ post.reading_time() }} min read</span>
+            <span class="text-primary-600">·</span>
+            <span>{{ post.views }} views</span>
         </div>
 
         <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-6 leading-tight">
@@ -42,43 +44,61 @@
     </div>
 
     <!-- Tipping Section -->
-    <section class="card p-8 text-center">
-        <h2 class="text-xl font-semibold text-white mb-2">Enjoyed this post?</h2>
-        <p class="text-primary-400 mb-6">
-            Support the author with a crypto tip
-        </p>
+    <section class="card p-6">
+        <h2 class="text-lg font-semibold text-white mb-4 text-center">Support the author</h2>
 
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+        <div class="space-y-3 mb-5">
             {% if !author_eth_address.is_empty() %}
-            <button onclick="initTip('ethereum', {{ post.id }}, '{{ author_eth_address }}')" class="btn btn-secondary w-full sm:w-auto px-5 py-3 rounded-lg text-sm">
-                🔷 Tip with ETH
-            </button>
+            <div class="flex items-center gap-3 bg-primary-800/50 rounded-lg p-3" data-chain="ethereum" data-address="{{ author_eth_address }}">
+                <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="16" fill="#627EEA"/>
+                    <path d="M16 4v8.87l7.5 3.35L16 4z" fill="#fff" fill-opacity="0.6"/>
+                    <path d="M16 4L8.5 16.22l7.5-3.35V4z" fill="#fff"/>
+                    <path d="M16 21.97v6.03l7.5-10.4-7.5 4.37z" fill="#fff" fill-opacity="0.6"/>
+                    <path d="M16 28V21.97l-7.5-4.37L16 28z" fill="#fff"/>
+                    <path d="M16 20.57l7.5-4.35-7.5-3.35v7.7z" fill="#fff" fill-opacity="0.2"/>
+                    <path d="M8.5 16.22l7.5 4.35v-7.7l-7.5 3.35z" fill="#fff" fill-opacity="0.6"/>
+                </svg>
+                <code class="addr-display text-sm text-primary-300 flex-1"></code>
+                <button onclick="copyAddress(this)" class="text-primary-400 hover:text-white p-1" title="Copy">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+            </div>
             {% endif %}
 
             {% if !author_sol_address.is_empty() %}
-            <button onclick="initTip('solana', {{ post.id }}, '{{ author_sol_address }}')" class="btn btn-secondary w-full sm:w-auto px-5 py-3 rounded-lg text-sm">
-                🟣 Tip with SOL
-            </button>
+            <div class="flex items-center gap-3 bg-primary-800/50 rounded-lg p-3" data-chain="solana" data-address="{{ author_sol_address }}">
+                <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="16" fill="#9945FF"/>
+                    <path d="M9.5 19.2a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/>
+                    <path d="M9.5 9.92a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/>
+                    <path d="M19.7 14.52a.6.6 0 00-.42-.17H6.75a.3.3 0 00-.21.51l2.54 2.54a.6.6 0 00.42.17h12.53a.3.3 0 00.21-.51l-2.54-2.54z" fill="#fff"/>
+                </svg>
+                <code class="addr-display text-sm text-primary-300 flex-1"></code>
+                <button onclick="copyAddress(this)" class="text-primary-400 hover:text-white p-1" title="Copy">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+            </div>
             {% endif %}
 
             {% if !author_btc_address.is_empty() %}
-            <button onclick="showBtcTip('{{ author_btc_address }}')" class="btn btn-secondary w-full sm:w-auto px-5 py-3 rounded-lg text-sm">
-                🟠 Tip with BTC
-            </button>
+            <div class="flex items-center gap-3 bg-primary-800/50 rounded-lg p-3" data-chain="bitcoin" data-address="{{ author_btc_address }}">
+                <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="16" fill="#F7931A"/>
+                    <path d="M22.5 13.5c.3-2-1.2-3.1-3.3-3.8l.7-2.7-1.6-.4-.7 2.6c-.4-.1-.8-.2-1.3-.3l.7-2.7-1.6-.4-.7 2.7c-.3-.1-.7-.2-1-.2v-.1l-2.3-.6-.4 1.7s1.2.3 1.2.3c.7.2.8.6.8 1l-.8 3.2c0 .1.1.1.1.1l-.1-.1-1.1 4.5c-.1.2-.3.5-.8.4 0 0-1.2-.3-1.2-.3l-.8 1.9 2.1.5c.4.1.8.2 1.2.3l-.7 2.8 1.6.4.7-2.7c.4.1.9.2 1.3.3l-.7 2.7 1.6.4.7-2.8c2.9.5 5.1.3 6-2.3.7-2.1 0-3.3-1.5-4 1.1-.3 1.9-1 2.1-2.5zm-3.8 5.3c-.5 2.1-4 1-5.1.7l.9-3.7c1.1.3 4.7.8 4.2 3zm.5-5.3c-.5 1.9-3.4.9-4.3.7l.8-3.3c1 .2 4 .7 3.5 2.6z" fill="#fff"/>
+                </svg>
+                <code class="addr-display text-sm text-primary-300 flex-1"></code>
+                <button onclick="copyAddress(this)" class="text-primary-400 hover:text-white p-1" title="Copy">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                </button>
+            </div>
             {% endif %}
         </div>
 
-        <div class="text-xs text-primary-500 space-y-1 break-all">
-            {% if !author_eth_address.is_empty() %}
-            <p class="truncate">ETH: {{ author_eth_address }}</p>
-            {% endif %}
-            {% if !author_sol_address.is_empty() %}
-            <p class="truncate">SOL: {{ author_sol_address }}</p>
-            {% endif %}
-            {% if !author_btc_address.is_empty() %}
-            <p class="truncate">BTC: {{ author_btc_address }}</p>
-            {% endif %}
-        </div>
+        <button id="tipButton" onclick="openTipModal()" class="w-full btn btn-primary py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            Send Tip
+        </button>
+        <p id="walletHint" class="text-xs text-primary-500 text-center mt-2">Connect wallet to send tips</p>
     </section>
 
     <!-- Back Link -->
@@ -91,14 +111,10 @@
 
 <!-- Tip Modal -->
 <div id="tipModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4">
-    <div class="card p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-6">
+    <div class="card p-6 w-full max-w-sm mx-auto">
+        <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold text-white">Send Tip</h2>
-            <button onclick="closeTipModal()" class="text-primary-400 hover:text-white text-xl p-2 -mr-2">×</button>
-        </div>
-
-        <div id="tipChainInfo" class="mb-4 p-3 bg-primary-800 rounded-lg text-center">
-            <span id="tipChainName" class="text-sm font-medium text-white">Ethereum</span>
+            <button onclick="closeTipModal()" class="text-primary-400 hover:text-white text-xl p-1">×</button>
         </div>
 
         <div class="space-y-4">
@@ -118,59 +134,73 @@
             </button>
         </div>
 
-        <div id="tipStatus" class="mt-4 text-center text-sm hidden"></div>
-    </div>
-</div>
-
-<!-- Bitcoin Tip Modal -->
-<div id="btcModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4">
-    <div class="card p-6 w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-lg font-semibold text-white">Tip with BTC</h2>
-            <button onclick="closeBtcModal()" class="text-primary-400 hover:text-white text-xl p-2 -mr-2">×</button>
-        </div>
-
-        <div class="text-center space-y-4">
-            <p class="text-sm text-primary-400">
-                Scan QR code or copy address
-            </p>
-
-            <!-- QR Code -->
-            <div class="flex justify-center">
-                <div id="btcQrCode" class="bg-white p-4 rounded-lg"></div>
-            </div>
-
-            <!-- Address with copy button -->
-            <div class="flex items-center gap-2 bg-primary-800 border border-primary-700 rounded-lg p-3">
-                <input type="text" id="btcAddressInput" readonly class="flex-1 bg-transparent text-sm text-primary-200 truncate border-0 focus:outline-none">
-                <button onclick="copyBtcAddress()" class="text-blue-400 hover:text-blue-300 p-2" title="Copy">
-                    <span id="copyIcon">📋</span>
-                    <span id="checkIcon" class="hidden">✓</span>
-                </button>
-            </div>
-
-            <p class="text-xs text-primary-500">
-                Send any amount of BTC to support
-            </p>
-        </div>
+        <div id="tipStatus" class="mt-3 text-center text-sm hidden"></div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
-    let currentTipChain = 'ethereum';
-    let currentPostId = null;
-    let currentRecipient = null;
-    let currentBtcAddress = null;
+    const postId = {{ post.id }};
+    const addresses = {
+        ethereum: '{{ author_eth_address }}',
+        solana: '{{ author_sol_address }}',
+        bitcoin: '{{ author_btc_address }}'
+    };
 
-    function initTip(chain, postId, recipient) {
-        currentTipChain = chain;
-        currentPostId = postId;
-        currentRecipient = recipient;
+    // Shorten address for display
+    function shortenAddress(addr) {
+        if (!addr || addr.length < 10) return addr;
+        return addr.slice(0, 6) + '...' + addr.slice(-4);
+    }
 
-        document.getElementById('tipChainName').textContent = chain === 'ethereum' ? 'Ethereum (ETH)' : 'Solana (SOL)';
+    // Initialize address displays
+    document.querySelectorAll('[data-address]').forEach(el => {
+        const addr = el.dataset.address;
+        el.querySelector('.addr-display').textContent = shortenAddress(addr);
+    });
+
+    // Copy address to clipboard
+    function copyAddress(btn) {
+        const addr = btn.closest('[data-address]').dataset.address;
+        navigator.clipboard.writeText(addr).then(() => {
+            const svg = btn.querySelector('svg');
+            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+            btn.classList.add('text-green-400');
+            setTimeout(() => {
+                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>';
+                btn.classList.remove('text-green-400');
+            }, 1500);
+        });
+    }
+
+    // Update tip button based on wallet connection
+    function updateTipButton() {
+        const btn = document.getElementById('tipButton');
+        const hint = document.getElementById('walletHint');
+
+        if (window.connectedWallet) {
+            btn.disabled = false;
+            hint.textContent = `Connected: ${shortenAddress(window.connectedWallet.address)}`;
+            hint.classList.remove('text-primary-500');
+            hint.classList.add('text-green-400');
+        } else {
+            btn.disabled = true;
+            hint.textContent = 'Connect wallet to send tips';
+            hint.classList.add('text-primary-500');
+            hint.classList.remove('text-green-400');
+        }
+    }
+
+    // Check wallet status on load and after connection
+    updateTipButton();
+    window.addEventListener('walletConnected', updateTipButton);
+
+    function openTipModal() {
+        if (!window.connectedWallet) {
+            openWalletModal();
+            return;
+        }
         document.getElementById('tipModal').classList.remove('hidden');
         document.getElementById('tipModal').classList.add('flex');
     }
@@ -179,39 +209,6 @@
         document.getElementById('tipModal').classList.add('hidden');
         document.getElementById('tipModal').classList.remove('flex');
         document.getElementById('tipStatus').classList.add('hidden');
-    }
-
-    function showBtcTip(address) {
-        currentBtcAddress = address;
-        document.getElementById('btcAddressInput').value = address;
-
-        const qrContainer = document.getElementById('btcQrCode');
-        qrContainer.innerHTML = '';
-        QRCode.toCanvas(address, { width: 180, margin: 2 }, function(error, canvas) {
-            if (!error) {
-                qrContainer.appendChild(canvas);
-            }
-        });
-
-        document.getElementById('btcModal').classList.remove('hidden');
-        document.getElementById('btcModal').classList.add('flex');
-    }
-
-    function closeBtcModal() {
-        document.getElementById('btcModal').classList.add('hidden');
-        document.getElementById('btcModal').classList.remove('flex');
-    }
-
-    function copyBtcAddress() {
-        const address = document.getElementById('btcAddressInput').value;
-        navigator.clipboard.writeText(address).then(() => {
-            document.getElementById('copyIcon').classList.add('hidden');
-            document.getElementById('checkIcon').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('copyIcon').classList.remove('hidden');
-                document.getElementById('checkIcon').classList.add('hidden');
-            }, 2000);
-        });
     }
 
     function setTipAmount(amount) {
@@ -229,7 +226,22 @@
         const statusEl = document.getElementById('tipStatus');
 
         if (!amount || parseFloat(amount) <= 0) {
-            statusEl.innerHTML = '<span class="text-red-400">Please enter a valid amount</span>';
+            statusEl.innerHTML = '<span class="text-red-400">Enter a valid amount</span>';
+            statusEl.classList.remove('hidden');
+            return;
+        }
+
+        if (!window.connectedWallet) {
+            statusEl.innerHTML = '<span class="text-red-400">Please connect wallet first</span>';
+            statusEl.classList.remove('hidden');
+            return;
+        }
+
+        const chain = window.connectedWallet.chain;
+        const recipient = addresses[chain];
+
+        if (!recipient) {
+            statusEl.innerHTML = '<span class="text-red-400">Author has no ' + chain + ' address</span>';
             statusEl.classList.remove('hidden');
             return;
         }
@@ -238,18 +250,18 @@
             statusEl.innerHTML = '<span class="text-blue-400">Processing...</span>';
             statusEl.classList.remove('hidden');
 
-            const txHash = await sendCryptoTip(currentTipChain, currentRecipient, amount);
+            const txHash = await sendCryptoTip(chain, recipient, amount);
 
             if (txHash) {
                 await fetch('/api/tips/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        post_id: currentPostId,
-                        from_address: window.connectedWallet?.address || 'unknown',
+                        post_id: postId,
+                        from_address: window.connectedWallet.address,
                         amount: amount,
-                        currency: currentTipChain === 'ethereum' ? 'ETH' : 'SOL',
-                        chain: currentTipChain,
+                        currency: chain === 'ethereum' ? 'ETH' : 'SOL',
+                        chain: chain,
                         tx_hash: txHash
                     })
                 });
@@ -258,13 +270,10 @@
                 setTimeout(closeTipModal, 2000);
             }
         } catch (error) {
-            statusEl.innerHTML = `<span class="text-red-400">Error: ${error.message}</span>`;
+            statusEl.innerHTML = `<span class="text-red-400">${error.message}</span>`;
         }
     }
 
-    document.getElementById('btcModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'btcModal') closeBtcModal();
-    });
     document.getElementById('tipModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'tipModal') closeTipModal();
     });

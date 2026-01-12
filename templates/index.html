@@ -45,6 +45,8 @@
                 <span>{{ post.created_at.format("%b %d, %Y") }}</span>
                 <span class="text-primary-600">·</span>
                 <span>{{ post.reading_time() }} min read</span>
+                <span class="text-primary-600">·</span>
+                <span>{{ post.views }} views</span>
             </div>
             <h3 class="text-lg font-semibold text-white mb-3 leading-snug">
                 <a href="/post/{{ post.slug }}" class="hover:text-blue-400 transition-colors">
@@ -66,32 +68,4 @@
     {% endif %}
 </section>
 
-<!-- Features Section -->
-<section class="bg-primary-900/50 py-16 sm:py-20 border-y border-primary-800">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-xl sm:text-2xl font-semibold text-white text-center mb-12">
-            Features
-        </h2>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            <!-- Wallet Auth -->
-            <div class="card p-6">
-                <div class="text-2xl mb-4">🔐</div>
-                <h3 class="text-lg font-semibold text-white mb-2">Wallet Authentication</h3>
-                <p class="text-primary-300 text-sm leading-relaxed">
-                    Sign in with MetaMask or Phantom. No passwords needed.
-                </p>
-            </div>
-
-            <!-- Crypto Tipping -->
-            <div class="card p-6">
-                <div class="text-2xl mb-4">💰</div>
-                <h3 class="text-lg font-semibold text-white mb-2">Crypto Tips</h3>
-                <p class="text-primary-300 text-sm leading-relaxed">
-                    Support creators with ETH, SOL, or BTC directly.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
 {% endblock %}

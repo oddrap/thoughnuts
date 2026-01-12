@@ -15,6 +15,7 @@ pub struct Post {
     pub published: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub views: i64,
 }
 
 #[derive(Debug, Deserialize)]

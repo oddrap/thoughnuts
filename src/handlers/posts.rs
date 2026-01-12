@@ -47,6 +47,9 @@ pub async fn index(State(state): State<Arc<AppState>>) -> Html<String> {
 pub async fn show(State(state): State<Arc<AppState>>, Path(slug): Path<String>) -> Html<String> {
     match db::get_post_by_slug(&state.db, &slug).await {
         Ok(Some(post)) => {
+            // Increment view count
+            let _ = db::increment_post_views(&state.db, &slug).await;
+
             let template = PostTemplate {
                 title: format!("{} | {}", post.title, state.config.blog_title),
                 post,

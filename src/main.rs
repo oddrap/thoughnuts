@@ -61,6 +61,7 @@ async fn load_posts_from_directory(pool: &sqlx::SqlitePool) -> Result<()> {
                         published: frontmatter.published.unwrap_or(true),
                         created_at: Utc::now(),
                         updated_at: Utc::now(),
+                        views: 0,
                     };
 
                     match db::upsert_post(pool, &post).await {
