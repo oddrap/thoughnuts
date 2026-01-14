@@ -21,6 +21,7 @@ pub struct PostTemplate {
     pub title: String,
     pub post: Post,
     pub author_eth_address: String,
+    pub author_avax_address: String,
     pub author_sol_address: String,
     pub author_btc_address: String,
 }
@@ -54,6 +55,7 @@ pub async fn show(State(state): State<Arc<AppState>>, Path(slug): Path<String>) 
                 title: format!("{} | {}", post.title, state.config.blog_title),
                 post,
                 author_eth_address: state.config.author_eth_address.clone(),
+                author_avax_address: state.config.author_avax_address.clone(),
                 author_sol_address: state.config.author_sol_address.clone(),
                 author_btc_address: state.config.author_btc_address.clone(),
             };

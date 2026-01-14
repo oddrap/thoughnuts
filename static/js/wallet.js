@@ -2,6 +2,15 @@
 
 window.connectedWallet = null;
 
+// Admin addresses (lowercase for comparison)
+const ADMIN_ADDRESSES = [
+    '0x360091e9e692b7775543da956b7ca6cc39bae86c'
+];
+
+function isAdmin(address) {
+    return ADMIN_ADDRESSES.includes(address.toLowerCase());
+}
+
 // Modal Functions
 function openWalletModal() {
     const modal = document.getElementById('walletModal');
@@ -23,6 +32,104 @@ function closeWalletModal() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }, 200);
+}
+
+// Wallet Dropdown Functions
+function openWalletDropdown() {
+    const dropdown = document.getElementById('walletDropdown');
+    dropdown.classList.remove('hidden');
+    updateNetworkChecks();
+}
+
+function closeWalletDropdown() {
+    const dropdown = document.getElementById('walletDropdown');
+    dropdown.classList.add('hidden');
+}
+
+function toggleWalletDropdown() {
+    const dropdown = document.getElementById('walletDropdown');
+    if (dropdown.classList.contains('hidden')) {
+        openWalletDropdown();
+    } else {
+        closeWalletDropdown();
+    }
+}
+
+function updateNetworkChecks() {
+    // Hide all checks first
+    document.getElementById('networkCheckEth')?.classList.add('hidden');
+    document.getElementById('networkCheckAvax')?.classList.add('hidden');
+    document.getElementById('networkCheckSol')?.classList.add('hidden');
+
+    // Show check for current network
+    if (window.connectedWallet) {
+        const chain = window.connectedWallet.chain;
+        if (chain === 'ethereum') {
+            document.getElementById('networkCheckEth')?.classList.remove('hidden');
+        } else if (chain === 'avalanche') {
+            document.getElementById('networkCheckAvax')?.classList.remove('hidden');
+        } else if (chain === 'solana') {
+            document.getElementById('networkCheckSol')?.classList.remove('hidden');
+        }
+    }
+}
+
+async function switchNetwork(network) {
+    if (!window.connectedWallet) return;
+
+    // For EVM chains (Ethereum, Avalanche), we can switch networks in MetaMask
+    if (network === 'ethereum' || network === 'avalanche') {
+        if (typeof window.ethereum === 'undefined') {
+            alert('Please install MetaMask');
+            return;
+        }
+
+        const chainIds = {
+            'ethereum': '0x1',      // Mainnet
+            'avalanche': '0xa86a'   // Avalanche C-Chain
+        };
+
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: chainIds[network] }]
+            });
+
+            // Update connected wallet chain
+            window.connectedWallet.chain = network;
+            localStorage.setItem('connectedWallet', JSON.stringify(window.connectedWallet));
+            updateNetworkChecks();
+
+        } catch (error) {
+            // Chain not added, try to add it
+            if (error.code === 4902 && network === 'avalanche') {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0xa86a',
+                            chainName: 'Avalanche C-Chain',
+                            nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
+                            rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+                            blockExplorerUrls: ['https://snowtrace.io/']
+                        }]
+                    });
+                    window.connectedWallet.chain = 'avalanche';
+                    localStorage.setItem('connectedWallet', JSON.stringify(window.connectedWallet));
+                    updateNetworkChecks();
+                } catch (addError) {
+                    console.error('Failed to add Avalanche network:', addError);
+                }
+            } else {
+                console.error('Failed to switch network:', error);
+            }
+        }
+    } else if (network === 'solana') {
+        // For Solana, user needs to use Phantom wallet
+        alert('Please use Phantom wallet for Solana. Disconnect and reconnect with Phantom.');
+    }
+
+    closeWalletDropdown();
 }
 
 // Ethereum (MetaMask) Connection
@@ -187,12 +294,33 @@ async function connectWallet(chain, walletType) {
 function updateWalletUI(address, chain) {
     const btn = document.getElementById('connectWalletBtn');
     const btnText = document.getElementById('walletBtnText');
+    const arrow = document.getElementById('walletDropdownArrow');
+    const adminBadge = document.getElementById('adminBadge');
 
     const shortAddress = address.substring(0, 6) + '...' + address.substring(address.length - 4);
-    const chainIcon = chain === 'ethereum' ? '⟠' : '◎';
+    const chainIcons = {
+        'ethereum': '⟠',
+        'avalanche': '🔺',
+        'solana': '◎'
+    };
+    const chainIcon = chainIcons[chain] || '⟠';
 
     btnText.textContent = `${chainIcon} ${shortAddress}`;
-    btn.onclick = disconnectWallet;
+    btn.onclick = toggleWalletDropdown;
+
+    // Show dropdown arrow
+    if (arrow) arrow.classList.remove('hidden');
+
+    // Show admin badge if admin
+    if (adminBadge) {
+        if (isAdmin(address)) {
+            adminBadge.classList.remove('hidden');
+            window.isAdmin = true;
+        } else {
+            adminBadge.classList.add('hidden');
+            window.isAdmin = false;
+        }
+    }
 
     // Dispatch event for other components
     window.dispatchEvent(new Event('walletConnected'));
@@ -201,13 +329,25 @@ function updateWalletUI(address, chain) {
 // Disconnect wallet
 function disconnectWallet() {
     window.connectedWallet = null;
+    window.isAdmin = false;
     localStorage.removeItem('connectedWallet');
 
     const btn = document.getElementById('connectWalletBtn');
     const btnText = document.getElementById('walletBtnText');
+    const arrow = document.getElementById('walletDropdownArrow');
+    const adminBadge = document.getElementById('adminBadge');
 
     btnText.textContent = 'Connect';
     btn.onclick = openWalletModal;
+
+    // Hide dropdown arrow
+    if (arrow) arrow.classList.add('hidden');
+
+    // Hide admin badge
+    if (adminBadge) adminBadge.classList.add('hidden');
+
+    // Close dropdown if open
+    closeWalletDropdown();
 
     // Dispatch event for other components
     window.dispatchEvent(new Event('walletConnected'));
@@ -280,6 +420,15 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('walletModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'walletModal') {
         closeWalletModal();
+    }
+});
+
+// Close wallet dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('walletDropdown');
+    const btn = document.getElementById('connectWalletBtn');
+    if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        closeWalletDropdown();
     }
 });
 

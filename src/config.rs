@@ -6,6 +6,7 @@ pub struct Config {
     pub blog_title: String,
     pub blog_description: String,
     pub author_eth_address: String,
+    pub author_avax_address: String,
     pub author_sol_address: String,
     pub author_btc_address: String,
     pub eth_rpc_url: String,
@@ -21,6 +22,7 @@ impl Config {
             blog_description: env::var("BLOG_DESCRIPTION")
                 .unwrap_or_else(|_| "A decentralized blog with crypto tipping".to_string()),
             author_eth_address: env::var("AUTHOR_ETH_ADDRESS").unwrap_or_default(),
+            author_avax_address: env::var("AUTHOR_AVAX_ADDRESS").unwrap_or_default(),
             author_sol_address: env::var("AUTHOR_SOL_ADDRESS").unwrap_or_default(),
             author_btc_address: env::var("AUTHOR_BTC_ADDRESS").unwrap_or_default(),
             eth_rpc_url: env::var("ETH_RPC_URL")

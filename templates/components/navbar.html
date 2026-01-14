@@ -18,10 +18,53 @@
 
             <!-- Right Side -->
             <div class="flex items-center gap-3">
-                <!-- Connect Wallet Button -->
-                <button id="connectWalletBtn" onclick="openWalletModal()" class="btn btn-secondary px-4 py-2 rounded-lg text-sm">
-                    <span id="walletBtnText">Connect</span>
-                </button>
+                <!-- Connect Wallet Button / Dropdown -->
+                <div class="relative">
+                    <button id="connectWalletBtn" onclick="openWalletModal()" class="btn btn-secondary px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                        <span id="walletBtnText">Connect</span>
+                        <svg id="walletDropdownArrow" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <!-- Wallet Dropdown Menu -->
+                    <div id="walletDropdown" class="hidden absolute right-0 mt-2 w-48 bg-primary-800 border border-primary-700 rounded-lg shadow-xl z-50">
+                        <!-- Admin Badge (hidden by default) -->
+                        <div id="adminBadge" class="hidden px-4 py-2 border-b border-primary-700">
+                            <span class="text-xs font-medium text-green-400">Admin</span>
+                        </div>
+
+                        <!-- Network Selection -->
+                        <div class="px-2 py-2 border-b border-primary-700">
+                            <p class="px-2 py-1 text-xs text-primary-400 uppercase tracking-wide">Network</p>
+                            <button onclick="switchNetwork('ethereum')" class="network-btn w-full flex items-center gap-2 px-2 py-2 text-sm text-primary-200 hover:bg-primary-700 rounded">
+                                <svg class="w-4 h-4" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16 4v8.87l7.5 3.35L16 4z" fill="#fff" fill-opacity="0.6"/><path d="M16 4L8.5 16.22l7.5-3.35V4z" fill="#fff"/></svg>
+                                Ethereum
+                                <span id="networkCheckEth" class="ml-auto text-green-400 hidden">&#10003;</span>
+                            </button>
+                            <button onclick="switchNetwork('avalanche')" class="network-btn w-full flex items-center gap-2 px-2 py-2 text-sm text-primary-200 hover:bg-primary-700 rounded">
+                                <svg class="w-4 h-4" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#E84142"/><path d="M20.5 20h-2.8c-.3 0-.5-.1-.7-.3l-1-1.7-1 1.7c-.2.2-.4.3-.7.3h-2.8c-.4 0-.6-.4-.4-.7l4.2-7.3c.2-.3.6-.3.8 0l4.2 7.3c.2.3 0 .7-.4.7z" fill="#fff"/></svg>
+                                Avalanche
+                                <span id="networkCheckAvax" class="ml-auto text-green-400 hidden">&#10003;</span>
+                            </button>
+                            <button onclick="switchNetwork('solana')" class="network-btn w-full flex items-center gap-2 px-2 py-2 text-sm text-primary-200 hover:bg-primary-700 rounded">
+                                <svg class="w-4 h-4" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9.5 19.2a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/></svg>
+                                Solana
+                                <span id="networkCheckSol" class="ml-auto text-green-400 hidden">&#10003;</span>
+                            </button>
+                        </div>
+
+                        <!-- Logout -->
+                        <div class="px-2 py-2">
+                            <button onclick="disconnectWallet(); closeWalletDropdown();" class="w-full flex items-center gap-2 px-2 py-2 text-sm text-red-400 hover:bg-primary-700 rounded">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Mobile Menu Button -->
                 <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="md:hidden p-2 text-primary-300 hover:text-white">

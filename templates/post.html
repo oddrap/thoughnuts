@@ -43,62 +43,66 @@
         {{ post.html_content|safe }}
     </div>
 
-    <!-- Tipping Section -->
-    <section class="card p-6">
-        <h2 class="text-lg font-semibold text-white mb-4 text-center">Support the author</h2>
+    <!-- Support Section -->
+    <section class="card p-5 max-w-sm mx-auto">
+        <p class="text-sm text-primary-300 mb-4 text-center">Support Thoughnuts</p>
 
-        <div class="space-y-3 mb-5">
-            {% if !author_eth_address.is_empty() %}
-            <div class="flex items-center gap-3 bg-primary-800/50 rounded-lg p-3" data-chain="ethereum" data-address="{{ author_eth_address }}">
-                <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="16" fill="#627EEA"/>
-                    <path d="M16 4v8.87l7.5 3.35L16 4z" fill="#fff" fill-opacity="0.6"/>
-                    <path d="M16 4L8.5 16.22l7.5-3.35V4z" fill="#fff"/>
-                    <path d="M16 21.97v6.03l7.5-10.4-7.5 4.37z" fill="#fff" fill-opacity="0.6"/>
-                    <path d="M16 28V21.97l-7.5-4.37L16 28z" fill="#fff"/>
-                    <path d="M16 20.57l7.5-4.35-7.5-3.35v7.7z" fill="#fff" fill-opacity="0.2"/>
-                    <path d="M8.5 16.22l7.5 4.35v-7.7l-7.5 3.35z" fill="#fff" fill-opacity="0.6"/>
-                </svg>
-                <code class="addr-display text-sm text-primary-300 flex-1"></code>
-                <button onclick="copyAddress(this)" class="text-primary-400 hover:text-white p-1" title="Copy">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                </button>
-            </div>
-            {% endif %}
-
-            {% if !author_sol_address.is_empty() %}
-            <div class="flex items-center gap-3 bg-primary-800/50 rounded-lg p-3" data-chain="solana" data-address="{{ author_sol_address }}">
-                <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="16" fill="#9945FF"/>
-                    <path d="M9.5 19.2a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/>
-                    <path d="M9.5 9.92a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/>
-                    <path d="M19.7 14.52a.6.6 0 00-.42-.17H6.75a.3.3 0 00-.21.51l2.54 2.54a.6.6 0 00.42.17h12.53a.3.3 0 00.21-.51l-2.54-2.54z" fill="#fff"/>
-                </svg>
-                <code class="addr-display text-sm text-primary-300 flex-1"></code>
-                <button onclick="copyAddress(this)" class="text-primary-400 hover:text-white p-1" title="Copy">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                </button>
-            </div>
-            {% endif %}
-
-            {% if !author_btc_address.is_empty() %}
-            <div class="flex items-center gap-3 bg-primary-800/50 rounded-lg p-3" data-chain="bitcoin" data-address="{{ author_btc_address }}">
-                <svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 32 32" fill="none">
-                    <circle cx="16" cy="16" r="16" fill="#F7931A"/>
-                    <path d="M22.5 13.5c.3-2-1.2-3.1-3.3-3.8l.7-2.7-1.6-.4-.7 2.6c-.4-.1-.8-.2-1.3-.3l.7-2.7-1.6-.4-.7 2.7c-.3-.1-.7-.2-1-.2v-.1l-2.3-.6-.4 1.7s1.2.3 1.2.3c.7.2.8.6.8 1l-.8 3.2c0 .1.1.1.1.1l-.1-.1-1.1 4.5c-.1.2-.3.5-.8.4 0 0-1.2-.3-1.2-.3l-.8 1.9 2.1.5c.4.1.8.2 1.2.3l-.7 2.8 1.6.4.7-2.7c.4.1.9.2 1.3.3l-.7 2.7 1.6.4.7-2.8c2.9.5 5.1.3 6-2.3.7-2.1 0-3.3-1.5-4 1.1-.3 1.9-1 2.1-2.5zm-3.8 5.3c-.5 2.1-4 1-5.1.7l.9-3.7c1.1.3 4.7.8 4.2 3zm.5-5.3c-.5 1.9-3.4.9-4.3.7l.8-3.3c1 .2 4 .7 3.5 2.6z" fill="#fff"/>
-                </svg>
-                <code class="addr-display text-sm text-primary-300 flex-1"></code>
-                <button onclick="copyAddress(this)" class="text-primary-400 hover:text-white p-1" title="Copy">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                </button>
-            </div>
-            {% endif %}
+        <!-- Currency Selection -->
+        <div class="grid grid-cols-4 gap-2 mb-4">
+            <button onclick="selectCurrency('eth')" data-currency="eth" class="currency-btn btn btn-secondary py-2 px-1 rounded-lg text-xs flex flex-col items-center justify-center gap-1">
+                <svg class="w-5 h-5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16 4v8.87l7.5 3.35L16 4z" fill="#fff" fill-opacity="0.6"/><path d="M16 4L8.5 16.22l7.5-3.35V4z" fill="#fff"/></svg>
+                ETH
+            </button>
+            <button onclick="selectCurrency('avax')" data-currency="avax" class="currency-btn btn btn-secondary py-2 px-1 rounded-lg text-xs flex flex-col items-center justify-center gap-1">
+                <svg class="w-5 h-5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#E84142"/><path d="M20.5 20h-2.8c-.3 0-.5-.1-.7-.3l-1-1.7-1 1.7c-.2.2-.4.3-.7.3h-2.8c-.4 0-.6-.4-.4-.7l4.2-7.3c.2-.3.6-.3.8 0l4.2 7.3c.2.3 0 .7-.4.7z" fill="#fff"/></svg>
+                AVAX
+            </button>
+            <button onclick="selectCurrency('sol')" data-currency="sol" class="currency-btn btn btn-secondary py-2 px-1 rounded-lg text-xs flex flex-col items-center justify-center gap-1">
+                <svg class="w-5 h-5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9.5 19.2a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/></svg>
+                SOL
+            </button>
+            <button onclick="selectCurrency('btc')" data-currency="btc" class="currency-btn btn btn-secondary py-2 px-1 rounded-lg text-xs flex flex-col items-center justify-center gap-1">
+                <svg class="w-5 h-5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#F7931A"/><path d="M22.5 13.5c.3-2-1.2-3.1-3.3-3.8l.7-2.7-1.6-.4-.7 2.6c-.4-.1-.8-.2-1.3-.3l.7-2.7-1.6-.4-.7 2.7c-.3-.1-.7-.2-1-.2v-.1l-2.3-.6-.4 1.7s1.2.3 1.2.3c.7.2.8.6.8 1l-.8 3.2c0 .1.1.1.1.1l-.1-.1-1.1 4.5c-.1.2-.3.5-.8.4 0 0-1.2-.3-1.2-.3l-.8 1.9 2.1.5c.4.1.8.2 1.2.3l-.7 2.8 1.6.4.7-2.7c.4.1.9.2 1.3.3l-.7 2.7 1.6.4.7-2.8c2.9.5 5.1.3 6-2.3.7-2.1 0-3.3-1.5-4 1.1-.3 1.9-1 2.1-2.5z" fill="#fff"/></svg>
+                BTC
+            </button>
+            <button onclick="selectCurrency('usdt-eth')" data-currency="usdt-eth" class="currency-btn btn btn-secondary py-2 px-1 rounded-lg text-xs flex flex-col items-center justify-center gap-1 relative">
+                <div class="relative">
+                    <svg class="w-5 h-5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#26A17B"/><path d="M17.9 17.9v-2.5h3.3v-2h-3.3v-2.6h-3.8v2.6h-3.3v2h3.3v2.5c-3.7.2-6.5.9-6.5 1.8 0 1 3.4 1.8 7.6 1.8s7.6-.8 7.6-1.8c0-.9-2.8-1.6-6.5-1.8h1.6z" fill="#fff"/></svg>
+                    <svg class="w-2.5 h-2.5 absolute -bottom-0.5 -right-0.5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#627EEA"/></svg>
+                </div>
+                USDT
+            </button>
+            <button onclick="selectCurrency('usdt-avax')" data-currency="usdt-avax" class="currency-btn btn btn-secondary py-2 px-1 rounded-lg text-xs flex flex-col items-center justify-center gap-1 relative">
+                <div class="relative">
+                    <svg class="w-5 h-5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#26A17B"/><path d="M17.9 17.9v-2.5h3.3v-2h-3.3v-2.6h-3.8v2.6h-3.3v2h3.3v2.5c-3.7.2-6.5.9-6.5 1.8 0 1 3.4 1.8 7.6 1.8s7.6-.8 7.6-1.8c0-.9-2.8-1.6-6.5-1.8h1.6z" fill="#fff"/></svg>
+                    <svg class="w-2.5 h-2.5 absolute -bottom-0.5 -right-0.5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#E84142"/></svg>
+                </div>
+                USDT
+            </button>
+            <button onclick="selectCurrency('usdt-sol')" data-currency="usdt-sol" class="currency-btn btn btn-secondary py-2 px-1 rounded-lg text-xs flex flex-col items-center justify-center gap-1 relative">
+                <div class="relative">
+                    <svg class="w-5 h-5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#26A17B"/><path d="M17.9 17.9v-2.5h3.3v-2h-3.3v-2.6h-3.8v2.6h-3.3v2h3.3v2.5c-3.7.2-6.5.9-6.5 1.8 0 1 3.4 1.8 7.6 1.8s7.6-.8 7.6-1.8c0-.9-2.8-1.6-6.5-1.8h1.6z" fill="#fff"/></svg>
+                    <svg class="w-2.5 h-2.5 absolute -bottom-0.5 -right-0.5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#9945FF"/></svg>
+                </div>
+                USDT
+            </button>
         </div>
 
-        <button id="tipButton" onclick="openTipModal()" class="w-full btn btn-primary py-3 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+        <!-- Amount Selection -->
+        <div class="grid grid-cols-3 gap-2 mb-3">
+            <button onclick="selectAmount(5)" class="amount-btn btn btn-secondary py-2 rounded-lg text-sm">$5</button>
+            <button onclick="selectAmount(10)" class="amount-btn btn btn-secondary py-2 rounded-lg text-sm">$10</button>
+            <button onclick="selectAmount(20)" class="amount-btn btn btn-secondary py-2 rounded-lg text-sm">$20</button>
+        </div>
+        <div class="flex gap-2 mb-4">
+            <span class="text-primary-400 text-sm py-2">$</span>
+            <input type="number" id="customAmount" min="1" placeholder="Custom" class="flex-1 p-2 bg-primary-800 border border-primary-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500">
+        </div>
+        <button onclick="sendTip()" class="w-full btn btn-primary py-2 rounded-lg text-sm font-medium">
             Send Tip
         </button>
-        <p id="walletHint" class="text-xs text-primary-500 text-center mt-2">Connect wallet to send tips</p>
+
+        <div id="tipStatus" class="mt-3 text-center text-sm hidden"></div>
     </section>
 
     <!-- Back Link -->
@@ -108,35 +112,6 @@
         </a>
     </div>
 </article>
-
-<!-- Tip Modal -->
-<div id="tipModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4">
-    <div class="card p-6 w-full max-w-sm mx-auto">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-white">Send Tip</h2>
-            <button onclick="closeTipModal()" class="text-primary-400 hover:text-white text-xl p-1">×</button>
-        </div>
-
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm text-primary-300 mb-2">Amount</label>
-                <div class="grid grid-cols-4 gap-2 mb-2">
-                    <button onclick="setTipAmount('0.001')" class="tip-amount-btn btn btn-secondary py-2 rounded text-sm">0.001</button>
-                    <button onclick="setTipAmount('0.005')" class="tip-amount-btn btn btn-secondary py-2 rounded text-sm">0.005</button>
-                    <button onclick="setTipAmount('0.01')" class="tip-amount-btn btn btn-secondary py-2 rounded text-sm">0.01</button>
-                    <button onclick="setTipAmount('0.1')" class="tip-amount-btn btn btn-secondary py-2 rounded text-sm">0.1</button>
-                </div>
-                <input type="number" id="tipAmount" step="0.001" min="0.001" value="0.01" class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500">
-            </div>
-
-            <button onclick="sendTip()" id="sendTipBtn" class="w-full btn btn-primary py-3 rounded-lg font-medium">
-                Send Tip
-            </button>
-        </div>
-
-        <div id="tipStatus" class="mt-3 text-center text-sm hidden"></div>
-    </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
@@ -144,76 +119,47 @@
     const postId = {{ post.id }};
     const addresses = {
         ethereum: '{{ author_eth_address }}',
+        avalanche: '{{ author_avax_address }}',
         solana: '{{ author_sol_address }}',
         bitcoin: '{{ author_btc_address }}'
     };
 
-    // Shorten address for display
-    function shortenAddress(addr) {
-        if (!addr || addr.length < 10) return addr;
-        return addr.slice(0, 6) + '...' + addr.slice(-4);
-    }
+    let selectedCurrency = null;
+    let selectedAmount = null;
 
-    // Initialize address displays
-    document.querySelectorAll('[data-address]').forEach(el => {
-        const addr = el.dataset.address;
-        el.querySelector('.addr-display').textContent = shortenAddress(addr);
-    });
-
-    // Copy address to clipboard
-    function copyAddress(btn) {
-        const addr = btn.closest('[data-address]').dataset.address;
-        navigator.clipboard.writeText(addr).then(() => {
-            const svg = btn.querySelector('svg');
-            svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
-            btn.classList.add('text-green-400');
-            setTimeout(() => {
-                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>';
-                btn.classList.remove('text-green-400');
-            }, 1500);
+    function resetTip() {
+        selectedCurrency = null;
+        selectedAmount = null;
+        document.getElementById('tipStatus').classList.add('hidden');
+        document.getElementById('customAmount').value = '';
+        document.querySelectorAll('.currency-btn').forEach(btn => {
+            btn.classList.remove('btn-primary', 'ring-2', 'ring-blue-500');
+            btn.classList.add('btn-secondary');
+        });
+        document.querySelectorAll('.amount-btn').forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
         });
     }
 
-    // Update tip button based on wallet connection
-    function updateTipButton() {
-        const btn = document.getElementById('tipButton');
-        const hint = document.getElementById('walletHint');
-
-        if (window.connectedWallet) {
-            btn.disabled = false;
-            hint.textContent = `Connected: ${shortenAddress(window.connectedWallet.address)}`;
-            hint.classList.remove('text-primary-500');
-            hint.classList.add('text-green-400');
-        } else {
-            btn.disabled = true;
-            hint.textContent = 'Connect wallet to send tips';
-            hint.classList.add('text-primary-500');
-            hint.classList.remove('text-green-400');
+    function selectCurrency(currency) {
+        selectedCurrency = currency;
+        document.querySelectorAll('.currency-btn').forEach(btn => {
+            btn.classList.remove('btn-primary', 'ring-2', 'ring-blue-500');
+            btn.classList.add('btn-secondary');
+        });
+        const selectedBtn = document.querySelector(`[data-currency="${currency}"]`);
+        if (selectedBtn) {
+            selectedBtn.classList.remove('btn-secondary');
+            selectedBtn.classList.add('btn-primary', 'ring-2', 'ring-blue-500');
         }
-    }
-
-    // Check wallet status on load and after connection
-    updateTipButton();
-    window.addEventListener('walletConnected', updateTipButton);
-
-    function openTipModal() {
-        if (!window.connectedWallet) {
-            openWalletModal();
-            return;
-        }
-        document.getElementById('tipModal').classList.remove('hidden');
-        document.getElementById('tipModal').classList.add('flex');
-    }
-
-    function closeTipModal() {
-        document.getElementById('tipModal').classList.add('hidden');
-        document.getElementById('tipModal').classList.remove('flex');
         document.getElementById('tipStatus').classList.add('hidden');
     }
 
-    function setTipAmount(amount) {
-        document.getElementById('tipAmount').value = amount;
-        document.querySelectorAll('.tip-amount-btn').forEach(btn => {
+    function selectAmount(amount) {
+        selectedAmount = amount;
+        document.getElementById('customAmount').value = amount;
+        document.querySelectorAll('.amount-btn').forEach(btn => {
             btn.classList.remove('btn-primary');
             btn.classList.add('btn-secondary');
         });
@@ -222,60 +168,178 @@
     }
 
     async function sendTip() {
-        const amount = document.getElementById('tipAmount').value;
         const statusEl = document.getElementById('tipStatus');
+        const customVal = document.getElementById('customAmount').value;
+        const amount = customVal ? parseFloat(customVal) : selectedAmount;
 
-        if (!amount || parseFloat(amount) <= 0) {
-            statusEl.innerHTML = '<span class="text-red-400">Enter a valid amount</span>';
+        if (!selectedCurrency) {
+            statusEl.innerHTML = '<span class="text-red-400">Select currency</span>';
             statusEl.classList.remove('hidden');
             return;
         }
 
-        if (!window.connectedWallet) {
-            statusEl.innerHTML = '<span class="text-red-400">Please connect wallet first</span>';
+        if (!amount || amount <= 0) {
+            statusEl.innerHTML = '<span class="text-red-400">Enter amount</span>';
             statusEl.classList.remove('hidden');
             return;
         }
 
-        const chain = window.connectedWallet.chain;
-        const recipient = addresses[chain];
+        // Determine chain
+        const chain = selectedCurrency.includes('avax') ? 'avalanche' :
+                      selectedCurrency.includes('eth') ? 'ethereum' :
+                      selectedCurrency.includes('sol') ? 'solana' : 'bitcoin';
 
-        if (!recipient) {
-            statusEl.innerHTML = '<span class="text-red-400">Author has no ' + chain + ' address</span>';
+        if (chain === 'bitcoin') {
+            const addr = addresses.bitcoin;
+            statusEl.innerHTML = `<span class="text-primary-300">Send BTC to:<br><code class="text-xs">${addr}</code></span>`;
             statusEl.classList.remove('hidden');
             return;
         }
 
-        try {
-            statusEl.innerHTML = '<span class="text-blue-400">Processing...</span>';
-            statusEl.classList.remove('hidden');
+        // For EVM chains (Ethereum, Avalanche), use MetaMask directly
+        if (chain === 'ethereum' || chain === 'avalanche') {
+            if (typeof window.ethereum === 'undefined') {
+                statusEl.innerHTML = '<span class="text-yellow-400">Install MetaMask</span>';
+                statusEl.classList.remove('hidden');
+                window.open('https://metamask.io/download/', '_blank');
+                return;
+            }
 
-            const txHash = await sendCryptoTip(chain, recipient, amount);
+            try {
+                statusEl.innerHTML = '<span class="text-blue-400">Connecting...</span>';
+                statusEl.classList.remove('hidden');
 
-            if (txHash) {
-                await fetch('/api/tips/submit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        post_id: postId,
-                        from_address: window.connectedWallet.address,
-                        amount: amount,
-                        currency: chain === 'ethereum' ? 'ETH' : 'SOL',
-                        chain: chain,
-                        tx_hash: txHash
-                    })
+                // Request account access
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const fromAddress = accounts[0];
+
+                // Switch to correct network
+                const chainIds = { 'ethereum': '0x1', 'avalanche': '0xa86a' };
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: chainIds[chain] }]
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902 && chain === 'avalanche') {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0xa86a',
+                                chainName: 'Avalanche C-Chain',
+                                nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
+                                rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+                                blockExplorerUrls: ['https://snowtrace.io/']
+                            }]
+                        });
+                    }
+                }
+
+                statusEl.innerHTML = '<span class="text-blue-400">Confirm in wallet...</span>';
+
+                const recipient = chain === 'ethereum' ? addresses.ethereum : addresses.avalanche;
+                const isToken = selectedCurrency.includes('usdt');
+                const cryptoAmount = isToken ? amount : (amount / 2500);
+                const weiAmount = '0x' + Math.floor(cryptoAmount * 1e18).toString(16);
+
+                const txHash = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [{
+                        from: fromAddress,
+                        to: recipient,
+                        value: weiAmount
+                    }]
                 });
 
-                statusEl.innerHTML = '<span class="text-green-400">Tip sent! Thank you!</span>';
-                setTimeout(closeTipModal, 2000);
+                if (txHash) {
+                    await fetch('/api/tips/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            post_id: postId,
+                            from_address: fromAddress,
+                            amount: amount.toString(),
+                            currency: selectedCurrency.toUpperCase(),
+                            chain: chain,
+                            tx_hash: txHash
+                        })
+                    });
+
+                    statusEl.innerHTML = '<span class="text-green-400">Sent! Thank you!</span>';
+                    setTimeout(resetTip, 3000);
+                }
+            } catch (error) {
+                statusEl.innerHTML = `<span class="text-red-400">${error.message || 'Transaction failed'}</span>`;
             }
-        } catch (error) {
-            statusEl.innerHTML = `<span class="text-red-400">${error.message}</span>`;
+            return;
+        }
+
+        // For Solana - use Phantom directly, fallback to MetaMask prompt
+        if (chain === 'solana') {
+            if (typeof window.solana === 'undefined' || !window.solana.isPhantom) {
+                // Phantom not available, try to open MetaMask
+                if (typeof window.ethereum !== 'undefined') {
+                    statusEl.innerHTML = '<span class="text-yellow-400">SOL requires Phantom. Use ETH/AVAX instead.</span>';
+                    statusEl.classList.remove('hidden');
+                    window.ethereum.request({ method: 'eth_requestAccounts' });
+                } else {
+                    statusEl.innerHTML = '<span class="text-yellow-400">Install MetaMask or Phantom</span>';
+                    statusEl.classList.remove('hidden');
+                    window.open('https://metamask.io/download/', '_blank');
+                }
+                return;
+            }
+
+            try {
+                statusEl.innerHTML = '<span class="text-blue-400">Connecting...</span>';
+                statusEl.classList.remove('hidden');
+
+                // Connect to Phantom
+                const response = await window.solana.connect();
+                const fromAddress = response.publicKey.toString();
+
+                statusEl.innerHTML = '<span class="text-blue-400">Confirm in wallet...</span>';
+
+                const isToken = selectedCurrency.includes('usdt');
+                const cryptoAmount = isToken ? amount : (amount / 150);
+
+                // For native SOL transfer
+                const connection = new solanaWeb3.Connection('https://api.mainnet-beta.solana.com');
+                const transaction = new solanaWeb3.Transaction().add(
+                    solanaWeb3.SystemProgram.transfer({
+                        fromPubkey: response.publicKey,
+                        toPubkey: new solanaWeb3.PublicKey(addresses.solana),
+                        lamports: Math.floor(cryptoAmount * 1e9)
+                    })
+                );
+
+                transaction.feePayer = response.publicKey;
+                transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+                const signed = await window.solana.signTransaction(transaction);
+                const txHash = await connection.sendRawTransaction(signed.serialize());
+
+                if (txHash) {
+                    await fetch('/api/tips/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            post_id: postId,
+                            from_address: fromAddress,
+                            amount: amount.toString(),
+                            currency: selectedCurrency.toUpperCase(),
+                            chain: chain,
+                            tx_hash: txHash
+                        })
+                    });
+
+                    statusEl.innerHTML = '<span class="text-green-400">Sent! Thank you!</span>';
+                    setTimeout(resetTip, 3000);
+                }
+            } catch (error) {
+                statusEl.innerHTML = `<span class="text-red-400">${error.message || 'Transaction failed'}</span>`;
+            }
         }
     }
-
-    document.getElementById('tipModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'tipModal') closeTipModal();
-    });
 </script>
 {% endblock %}
