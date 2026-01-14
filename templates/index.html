@@ -28,9 +28,14 @@
 
 <!-- Latest Posts -->
 <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-    <h2 class="text-xl sm:text-2xl font-semibold text-white mb-8">
-        Latest Posts
-    </h2>
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-xl sm:text-2xl font-semibold text-white">
+            Latest Posts
+        </h2>
+        <a href="/admin/post/new" id="newPostBtn" class="hidden btn btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+            + New Post
+        </a>
+    </div>
 
     {% if posts.is_empty() %}
     <div class="text-center py-16 card p-8">
@@ -58,9 +63,14 @@
             </p>
             <div class="flex items-center justify-between">
                 <span class="text-sm text-primary-400">{{ post.author }}</span>
-                <a href="/post/{{ post.slug }}" class="text-sm text-blue-400 hover:text-blue-300 font-medium">
-                    Read more →
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="/admin/post/edit/{{ post.slug }}" class="admin-edit-btn hidden text-sm text-yellow-400 hover:text-yellow-300 font-medium">
+                        Edit
+                    </a>
+                    <a href="/post/{{ post.slug }}" class="text-sm text-blue-400 hover:text-blue-300 font-medium">
+                        Read more →
+                    </a>
+                </div>
             </div>
         </article>
         {% endfor %}
@@ -68,4 +78,23 @@
     {% endif %}
 </section>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Show admin buttons if admin is connected
+    window.addEventListener('walletConnected', () => {
+        const isAdmin = window.isAdmin || false;
+        const newPostBtn = document.getElementById('newPostBtn');
+        const editBtns = document.querySelectorAll('.admin-edit-btn');
+
+        if (isAdmin) {
+            newPostBtn?.classList.remove('hidden');
+            editBtns.forEach(btn => btn.classList.remove('hidden'));
+        } else {
+            newPostBtn?.classList.add('hidden');
+            editBtns.forEach(btn => btn.classList.add('hidden'));
+        }
+    });
+</script>
 {% endblock %}

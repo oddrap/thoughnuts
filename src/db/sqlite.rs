@@ -188,6 +188,15 @@ pub async fn post_exists(pool: &SqlitePool, slug: &str) -> Result<bool> {
     Ok(result.0 > 0)
 }
 
+pub async fn delete_post(pool: &SqlitePool, slug: &str) -> Result<()> {
+    sqlx::query("DELETE FROM posts WHERE slug = ?")
+        .bind(slug)
+        .execute(pool)
+        .await?;
+
+    Ok(())
+}
+
 pub async fn upsert_post(pool: &SqlitePool, post: &Post) -> Result<i64> {
     let exists = post_exists(pool, &post.slug).await?;
 

@@ -27,6 +27,11 @@
             By <span class="text-white font-medium">{{ post.author }}</span>
         </div>
 
+        <!-- Admin Edit Button -->
+        <a href="/admin/post/edit/{{ post.slug }}" id="editPostBtn" class="hidden inline-block mt-4 text-sm text-yellow-400 hover:text-yellow-300 font-medium">
+            Edit Post
+        </a>
+
         {% if !post.tags.is_empty() %}
         <div class="flex flex-wrap justify-center gap-2 mt-6">
             {% for tag in post.tags_list() %}
@@ -341,5 +346,15 @@
             }
         }
     }
+
+    // Show admin Edit button if admin is connected
+    window.addEventListener('walletConnected', () => {
+        const editBtn = document.getElementById('editPostBtn');
+        if (window.isAdmin) {
+            editBtn?.classList.remove('hidden');
+        } else {
+            editBtn?.classList.add('hidden');
+        }
+    });
 </script>
 {% endblock %}

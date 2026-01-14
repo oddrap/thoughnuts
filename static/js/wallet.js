@@ -100,6 +100,14 @@ async function switchNetwork(network) {
             localStorage.setItem('connectedWallet', JSON.stringify(window.connectedWallet));
             updateNetworkChecks();
 
+            // Update button icon
+            const btnText = document.getElementById('walletBtnText');
+            if (btnText && window.connectedWallet.address) {
+                const shortAddress = window.connectedWallet.address.substring(0, 6) + '...' + window.connectedWallet.address.substring(window.connectedWallet.address.length - 4);
+                const icon = network === 'ethereum' ? '⟠' : '🔺';
+                btnText.textContent = `${icon} ${shortAddress}`;
+            }
+
         } catch (error) {
             // Chain not added, try to add it
             if (error.code === 4902 && network === 'avalanche') {
@@ -125,8 +133,17 @@ async function switchNetwork(network) {
             }
         }
     } else if (network === 'solana') {
-        // For Solana, user needs to use Phantom wallet
-        alert('Please use Phantom wallet for Solana. Disconnect and reconnect with Phantom.');
+        // For Solana, just update the UI - actual Phantom check happens at tip time
+        window.connectedWallet.chain = 'solana';
+        localStorage.setItem('connectedWallet', JSON.stringify(window.connectedWallet));
+        updateNetworkChecks();
+
+        // Update button icon to show Solana
+        const btnText = document.getElementById('walletBtnText');
+        if (btnText && window.connectedWallet.address) {
+            const shortAddress = window.connectedWallet.address.substring(0, 6) + '...' + window.connectedWallet.address.substring(window.connectedWallet.address.length - 4);
+            btnText.textContent = `◎ ${shortAddress}`;
+        }
     }
 
     closeWalletDropdown();

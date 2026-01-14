@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Edit Post{% else %}New Post{% endif %} | Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl font-bold text-white">
+            {% if is_edit %}Edit Post{% else %}New Post{% endif %}
+        </h1>
+        <a href="/" class="text-primary-400 hover:text-white text-sm">
+            &larr; Back to Home
+        </a>
+    </div>
+
+    <!-- Auth Check Message -->
+    <div id="authRequired" class="card p-8 text-center">
+        <p class="text-primary-300 mb-4">Admin authentication required</p>
+        <button onclick="openWalletModal()" class="btn btn-primary px-6 py-2 rounded-lg text-sm font-medium">
+            Connect Wallet
+        </button>
+    </div>
+
+    <!-- Editor Form (hidden until auth) -->
+    <form id="editorForm" class="hidden space-y-6">
+        <div>
+            <label class="block text-sm font-medium text-primary-300 mb-2">Title</label>
+            <input type="text" id="postTitle" required
+                class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                placeholder="Enter post title"
+                value="{{ post.title }}">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-primary-300 mb-2">Slug (URL)</label>
+            <input type="text" id="postSlug" required
+                class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                placeholder="post-url-slug"
+                value="{{ post.slug }}"
+                {% if is_edit %}readonly{% endif %}>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-primary-300 mb-2">Description</label>
+            <input type="text" id="postDescription" required
+                class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                placeholder="Brief description of the post"
+                value="{{ post.description }}">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-primary-300 mb-2">Author</label>
+            <input type="text" id="postAuthor" required
+                class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                placeholder="Author name"
+                value="{% if post.author %}{{ post.author }}{% else %}Thoughnuts{% endif %}">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-primary-300 mb-2">Tags (comma separated)</label>
+            <input type="text" id="postTags"
+                class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                placeholder="web3, crypto, blog"
+                value="{{ post.tags }}">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-primary-300 mb-2">Content (Markdown)</label>
+            <!-- Editor Toolbar -->
+            <div class="flex flex-wrap gap-1 mb-2 p-2 bg-primary-900 border border-primary-700 rounded-t-lg">
+                <button type="button" onclick="insertMarkdown('bold')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded" title="Bold">
+                    <strong>B</strong>
+                </button>
+                <button type="button" onclick="insertMarkdown('italic')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded italic" title="Italic">
+                    I
+                </button>
+                <button type="button" onclick="insertMarkdown('strikethrough')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded line-through" title="Strikethrough">
+                    S
+                </button>
+                <span class="w-px bg-primary-700 mx-1"></span>
+                <button type="button" onclick="insertMarkdown('h1')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded font-bold" title="Heading 1">
+                    H1
+                </button>
+                <button type="button" onclick="insertMarkdown('h2')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded font-bold" title="Heading 2">
+                    H2
+                </button>
+                <button type="button" onclick="insertMarkdown('h3')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded font-bold" title="Heading 3">
+                    H3
+                </button>
+                <span class="w-px bg-primary-700 mx-1"></span>
+                <button type="button" onclick="insertMarkdown('link')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded" title="Link">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                </button>
+                <button type="button" onclick="insertMarkdown('image')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded" title="Image">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </button>
+                <span class="w-px bg-primary-700 mx-1"></span>
+                <button type="button" onclick="insertMarkdown('quote')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded" title="Quote">
+                    <svg class="w-4 h-4 inline" fill="currentColor" viewBox="0 0 24 24"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>
+                </button>
+                <button type="button" onclick="insertMarkdown('code')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded font-mono" title="Inline Code">
+                    &lt;/&gt;
+                </button>
+                <button type="button" onclick="insertMarkdown('codeblock')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded" title="Code Block">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                </button>
+                <span class="w-px bg-primary-700 mx-1"></span>
+                <button type="button" onclick="insertMarkdown('ul')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded" title="Bullet List">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <button type="button" onclick="insertMarkdown('ol')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded" title="Numbered List">
+                    <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20h14M7 12h14M7 4h14M3 20h.01M3 12h.01M3 4h.01"/></svg>
+                </button>
+                <button type="button" onclick="insertMarkdown('hr')" class="toolbar-btn px-3 py-1.5 text-sm text-primary-300 hover:text-white hover:bg-primary-700 rounded" title="Horizontal Rule">
+                    ―
+                </button>
+            </div>
+            <textarea id="postContent" required rows="20"
+                class="w-full p-3 bg-primary-800 border border-primary-700 border-t-0 rounded-b-lg text-white font-mono text-sm focus:outline-none focus:border-blue-500"
+                placeholder="Write your post content in Markdown...">{{ post.content }}</textarea>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button type="submit" class="btn btn-primary px-6 py-3 rounded-lg text-sm font-medium">
+                {% if is_edit %}Update Post{% else %}Create Post{% endif %}
+            </button>
+            {% if is_edit %}
+            <button type="button" onclick="deletePost()" class="btn btn-secondary px-6 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300">
+                Delete Post
+            </button>
+            {% endif %}
+        </div>
+
+        <div id="editorStatus" class="text-center text-sm hidden"></div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const isEdit = {{ is_edit }};
+    const originalSlug = '{{ post.slug }}';
+
+    // Markdown toolbar functions
+    function insertMarkdown(type) {
+        const textarea = document.getElementById('postContent');
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        let insertion = '';
+        let cursorOffset = 0;
+
+        switch (type) {
+            case 'bold':
+                insertion = `**${selectedText || 'bold text'}**`;
+                cursorOffset = selectedText ? 0 : -2;
+                break;
+            case 'italic':
+                insertion = `*${selectedText || 'italic text'}*`;
+                cursorOffset = selectedText ? 0 : -1;
+                break;
+            case 'strikethrough':
+                insertion = `~~${selectedText || 'strikethrough'}~~`;
+                cursorOffset = selectedText ? 0 : -2;
+                break;
+            case 'h1':
+                insertion = `# ${selectedText || 'Heading 1'}`;
+                break;
+            case 'h2':
+                insertion = `## ${selectedText || 'Heading 2'}`;
+                break;
+            case 'h3':
+                insertion = `### ${selectedText || 'Heading 3'}`;
+                break;
+            case 'link':
+                insertion = `[${selectedText || 'link text'}](url)`;
+                cursorOffset = selectedText ? -1 : -4;
+                break;
+            case 'image':
+                insertion = `![${selectedText || 'alt text'}](image-url)`;
+                cursorOffset = selectedText ? -1 : -10;
+                break;
+            case 'quote':
+                insertion = `> ${selectedText || 'quote'}`;
+                break;
+            case 'code':
+                insertion = `\`${selectedText || 'code'}\``;
+                cursorOffset = selectedText ? 0 : -1;
+                break;
+            case 'codeblock':
+                insertion = `\`\`\`\n${selectedText || 'code'}\n\`\`\``;
+                cursorOffset = selectedText ? 0 : -4;
+                break;
+            case 'ul':
+                insertion = `- ${selectedText || 'list item'}`;
+                break;
+            case 'ol':
+                insertion = `1. ${selectedText || 'list item'}`;
+                break;
+            case 'hr':
+                insertion = `\n---\n`;
+                break;
+        }
+
+        textarea.value = textarea.value.substring(0, start) + insertion + textarea.value.substring(end);
+        textarea.focus();
+        const newPos = start + insertion.length + cursorOffset;
+        textarea.setSelectionRange(newPos, newPos);
+    }
+
+    // Check admin auth on load and wallet change
+    function checkAdminAuth() {
+        const authRequired = document.getElementById('authRequired');
+        const editorForm = document.getElementById('editorForm');
+
+        if (window.isAdmin) {
+            authRequired.classList.add('hidden');
+            editorForm.classList.remove('hidden');
+        } else {
+            authRequired.classList.remove('hidden');
+            editorForm.classList.add('hidden');
+        }
+    }
+
+    window.addEventListener('walletConnected', checkAdminAuth);
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(checkAdminAuth, 500);
+    });
+
+    // Auto-generate slug from title
+    document.getElementById('postTitle')?.addEventListener('input', (e) => {
+        if (!isEdit) {
+            const slug = e.target.value
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            document.getElementById('postSlug').value = slug;
+        }
+    });
+
+    // Form submission
+    document.getElementById('editorForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const statusEl = document.getElementById('editorStatus');
+
+        const postData = {
+            title: document.getElementById('postTitle').value,
+            slug: document.getElementById('postSlug').value,
+            description: document.getElementById('postDescription').value,
+            author: document.getElementById('postAuthor').value,
+            tags: document.getElementById('postTags').value,
+            content: document.getElementById('postContent').value,
+            wallet_address: window.connectedWallet?.address
+        };
+
+        try {
+            statusEl.innerHTML = '<span class="text-blue-400">Saving...</span>';
+            statusEl.classList.remove('hidden');
+
+            const url = isEdit ? `/api/admin/posts/${originalSlug}` : '/api/admin/posts';
+            const method = isEdit ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(postData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                statusEl.innerHTML = '<span class="text-green-400">Saved successfully!</span>';
+                setTimeout(() => {
+                    window.location.href = `/post/${postData.slug}`;
+                }, 1000);
+            } else {
+                statusEl.innerHTML = `<span class="text-red-400">${result.error || 'Failed to save'}</span>`;
+            }
+        } catch (error) {
+            statusEl.innerHTML = `<span class="text-red-400">${error.message}</span>`;
+        }
+    });
+
+    async function deletePost() {
+        if (!confirm('Are you sure you want to delete this post?')) return;
+
+        const statusEl = document.getElementById('editorStatus');
+        try {
+            statusEl.innerHTML = '<span class="text-blue-400">Deleting...</span>';
+            statusEl.classList.remove('hidden');
+
+            const response = await fetch(`/api/admin/posts/${originalSlug}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ wallet_address: window.connectedWallet?.address })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                statusEl.innerHTML = '<span class="text-green-400">Deleted!</span>';
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
+            } else {
+                statusEl.innerHTML = `<span class="text-red-400">${result.error || 'Failed to delete'}</span>`;
+            }
+        } catch (error) {
+            statusEl.innerHTML = `<span class="text-red-400">${error.message}</span>`;
+        }
+    }
+</script>
+{% endblock %}

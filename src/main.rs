@@ -7,7 +7,7 @@ mod routes;
 mod web3;
 
 use anyhow::Result;
-use axum::{routing::get, Router};
+use axum::{routing::{get, post, put, delete}, Router};
 use chrono::Utc;
 use sqlx::sqlite::SqlitePoolOptions;
 use std::sync::Arc;
@@ -111,6 +111,12 @@ async fn main() -> Result<()> {
         .route("/", get(handlers::posts::index))
         .route("/post/:slug", get(handlers::posts::show))
         .route("/posts", get(handlers::posts::list))
+        // Admin routes
+        .route("/admin/post/new", get(handlers::admin::new_post))
+        .route("/admin/post/edit/:slug", get(handlers::admin::edit_post))
+        .route("/api/admin/posts", post(handlers::admin::create_post))
+        .route("/api/admin/posts/:slug", put(handlers::admin::update_post))
+        .route("/api/admin/posts/:slug", delete(handlers::admin::delete_post))
         .nest("/api/auth", routes::auth::router())
         .nest("/api/tips", routes::tipping::router())
         .nest_service("/static", ServeDir::new("static"))
