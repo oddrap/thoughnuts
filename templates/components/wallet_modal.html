@@ -53,6 +53,20 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
                 </button>
+
+                <!-- Avalanche -->
+                <button onclick="showAvalancheOptions()" class="w-full btn btn-secondary p-4 rounded-lg flex items-center gap-4 text-left">
+                    <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                        <span class="text-2xl">🔺</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-medium text-white">Avalanche</div>
+                        <div class="text-sm text-primary-400">Avalanche C-Chain</div>
+                    </div>
+                    <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
             </div>
         </div>
 
@@ -198,6 +212,55 @@
                     <div>
                         <div class="font-medium text-white">Mobile App</div>
                         <div class="text-sm text-primary-400">Open in Coinbase Wallet app</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Avalanche Connection Options -->
+        <div id="avalancheOptionsView" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <button onclick="showWalletSelect()" class="text-primary-400 hover:text-white flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Back
+                </button>
+                <button onclick="closeWalletModal()" class="text-primary-400 hover:text-white text-xl p-2 -mr-2">&times;</button>
+            </div>
+
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
+                    <span class="text-4xl">🔺</span>
+                </div>
+                <h2 class="text-lg font-semibold text-white">Avalanche</h2>
+                <p class="text-sm text-primary-400">Avalanche C-Chain</p>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Browser Extension -->
+                <button onclick="connectAvalancheExtension()" class="w-full btn btn-secondary p-4 rounded-lg flex items-center gap-4 text-left">
+                    <div class="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-white">Browser Extension</div>
+                        <div class="text-sm text-primary-400">Connect via MetaMask or Core Wallet</div>
+                    </div>
+                </button>
+
+                <!-- Mobile App -->
+                <button onclick="connectAvalancheMobile()" class="w-full btn btn-secondary p-4 rounded-lg flex items-center gap-4 text-left">
+                    <div class="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="font-medium text-white">Mobile App</div>
+                        <div class="text-sm text-primary-400">Open in Core mobile app</div>
                     </div>
                 </button>
             </div>

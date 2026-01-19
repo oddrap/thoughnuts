@@ -84,6 +84,7 @@ function showWalletSelect() {
     document.getElementById('metamaskOptionsView')?.classList.add('hidden');
     document.getElementById('phantomOptionsView')?.classList.add('hidden');
     document.getElementById('baseOptionsView')?.classList.add('hidden');
+    document.getElementById('avalancheOptionsView')?.classList.add('hidden');
 }
 
 function showMetamaskOptions() {
@@ -91,6 +92,7 @@ function showMetamaskOptions() {
     document.getElementById('metamaskOptionsView')?.classList.remove('hidden');
     document.getElementById('phantomOptionsView')?.classList.add('hidden');
     document.getElementById('baseOptionsView')?.classList.add('hidden');
+    document.getElementById('avalancheOptionsView')?.classList.add('hidden');
 }
 
 function showPhantomOptions() {
@@ -98,6 +100,7 @@ function showPhantomOptions() {
     document.getElementById('metamaskOptionsView')?.classList.add('hidden');
     document.getElementById('phantomOptionsView')?.classList.remove('hidden');
     document.getElementById('baseOptionsView')?.classList.add('hidden');
+    document.getElementById('avalancheOptionsView')?.classList.add('hidden');
 }
 
 function showBaseOptions() {
@@ -105,6 +108,15 @@ function showBaseOptions() {
     document.getElementById('metamaskOptionsView')?.classList.add('hidden');
     document.getElementById('phantomOptionsView')?.classList.add('hidden');
     document.getElementById('baseOptionsView')?.classList.remove('hidden');
+    document.getElementById('avalancheOptionsView')?.classList.add('hidden');
+}
+
+function showAvalancheOptions() {
+    document.getElementById('walletSelectView')?.classList.add('hidden');
+    document.getElementById('metamaskOptionsView')?.classList.add('hidden');
+    document.getElementById('phantomOptionsView')?.classList.add('hidden');
+    document.getElementById('baseOptionsView')?.classList.add('hidden');
+    document.getElementById('avalancheOptionsView')?.classList.remove('hidden');
 }
 
 // Wallet Dropdown Functions
@@ -632,6 +644,87 @@ function connectBaseMobile() {
     }
 }
 
+// Avalanche - Browser Extension (uses MetaMask or Core Wallet)
+async function connectAvalancheExtension() {
+    const statusEl = document.getElementById('walletStatus');
+    statusEl.classList.remove('hidden');
+    statusEl.innerHTML = '<span class="text-blue-400">Connecting to Avalanche...</span>';
+
+    if (typeof window.ethereum === 'undefined') {
+        statusEl.innerHTML = '<span class="text-red-500">No wallet found. Please install MetaMask or Core Wallet.</span>';
+        setTimeout(() => {
+            window.open('https://core.app/', '_blank');
+            statusEl.classList.add('hidden');
+        }, 2000);
+        return;
+    }
+
+    try {
+        // First connect to wallet
+        const accounts = await window.ethereum.request({
+            method: 'eth_requestAccounts'
+        });
+
+        // Try to switch to Avalanche C-Chain
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0xa86a' }] // Avalanche C-Chain
+            });
+        } catch (switchError) {
+            // Chain not added, add it
+            if (switchError.code === 4902) {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: '0xa86a',
+                        chainName: 'Avalanche C-Chain',
+                        nativeCurrency: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
+                        rpcUrls: ['https://api.avax.network/ext/bc/C/rpc'],
+                        blockExplorerUrls: ['https://snowtrace.io/']
+                    }]
+                });
+            }
+        }
+
+        if (accounts && accounts.length > 0) {
+            await authenticateWallet(accounts[0], 'avalanche', 'avalanche');
+        }
+    } catch (error) {
+        console.error('Avalanche connection error:', error);
+        statusEl.innerHTML = '<span class="text-red-500">Connection failed. Please try again.</span>';
+        setTimeout(() => statusEl.classList.add('hidden'), 3000);
+    }
+}
+
+// Avalanche - Mobile (Core Wallet deep link)
+function connectAvalancheMobile() {
+    const statusEl = document.getElementById('walletStatus');
+    statusEl.classList.remove('hidden');
+
+    // Check if on mobile
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        // Create Core Wallet deep link for Avalanche
+        const currentUrl = encodeURIComponent(window.location.href);
+        const coreDeepLink = `https://core.app/discover/browser?url=${currentUrl}`;
+
+        statusEl.innerHTML = '<span class="text-blue-400">Opening Core Wallet...</span>';
+
+        // Try to open Core Wallet
+        window.location.href = coreDeepLink;
+
+        setTimeout(() => {
+            statusEl.innerHTML = '<span class="text-primary-400">If Core Wallet didn\'t open, please install the app.</span>';
+        }, 3000);
+    } else {
+        // On desktop, show message to use extension
+        statusEl.innerHTML = '<span class="text-yellow-400">Please use Browser Extension on desktop, or visit from mobile.</span>';
+        setTimeout(() => statusEl.classList.add('hidden'), 3000);
+    }
+}
+
 // Generic authentication function for wallet connections
 async function authenticateWallet(address, chain, walletType) {
     const statusEl = document.getElementById('walletStatus');
@@ -881,22 +974,30 @@ async function connectWallet(chain, walletType) {
 function updateWalletUI(address, chain) {
     const btn = document.getElementById('connectWalletBtn');
     const btnText = document.getElementById('walletBtnText');
+    const btnTextMobile = document.getElementById('walletBtnTextMobile');
     const arrow = document.getElementById('walletDropdownArrow');
     const walletIcon = document.getElementById('walletIcon');
     const adminBadge = document.getElementById('adminBadge');
     const headerBalances = document.getElementById('headerBalances');
     const headerBalancesLoading = document.getElementById('headerBalancesLoading');
     const headerBalancesContent = document.getElementById('headerBalancesContent');
+    const mobileBalancesRow = document.getElementById('mobileBalancesRow');
 
     const shortAddress = address.substring(0, 6) + '...' + address.substring(address.length - 4);
+    const mobileShortAddress = address.substring(0, 4) + '..' + address.substring(address.length - 3);
     const chainIcons = {
         'ethereum': '⟠',
         'base': '🔵',
+        'avalanche': '🔺',
         'solana': '◎'
     };
     const chainIcon = chainIcons[chain] || '⟠';
 
+    // Desktop: full address
     btnText.textContent = `${chainIcon} ${shortAddress}`;
+    // Mobile: shorter address
+    if (btnTextMobile) btnTextMobile.textContent = `${chainIcon} ${mobileShortAddress}`;
+
     btn.onclick = toggleWalletDropdown;
 
     // Hide wallet icon when connected
@@ -905,13 +1006,18 @@ function updateWalletUI(address, chain) {
     // Show dropdown arrow
     if (arrow) arrow.classList.remove('hidden');
 
-    // Show header balances section with loading state
+    // Show header balances section with loading state (desktop)
     if (headerBalances) {
         headerBalances.classList.remove('hidden');
         headerBalances.classList.add('flex');
     }
     if (headerBalancesLoading) headerBalancesLoading.classList.remove('hidden');
     if (headerBalancesContent) headerBalancesContent.classList.add('hidden');
+
+    // Show mobile balances row
+    if (mobileBalancesRow) {
+        mobileBalancesRow.classList.remove('hidden');
+    }
 
     // Show admin badge if admin
     if (adminBadge) {
@@ -945,12 +1051,15 @@ async function disconnectWallet() {
 
     const btn = document.getElementById('connectWalletBtn');
     const btnText = document.getElementById('walletBtnText');
+    const btnTextMobile = document.getElementById('walletBtnTextMobile');
     const arrow = document.getElementById('walletDropdownArrow');
     const walletIcon = document.getElementById('walletIcon');
     const adminBadge = document.getElementById('adminBadge');
     const headerBalances = document.getElementById('headerBalances');
+    const mobileBalancesRow = document.getElementById('mobileBalancesRow');
 
     btnText.textContent = 'Connect Wallet';
+    if (btnTextMobile) btnTextMobile.textContent = 'Connect';
     btn.onclick = openWalletModal;
 
     // Show wallet icon when disconnected
@@ -966,6 +1075,11 @@ async function disconnectWallet() {
     if (headerBalances) {
         headerBalances.classList.add('hidden');
         headerBalances.classList.remove('flex');
+    }
+
+    // Hide mobile balances row
+    if (mobileBalancesRow) {
+        mobileBalancesRow.classList.add('hidden');
     }
 
     // Close dropdown if open
@@ -1131,26 +1245,20 @@ async function fetchAllBalances() {
         const connectedChain = window.connectedWallet?.chain;
 
         if (isEVM) {
-            // EVM address - fetch balances based on connected chain
-            if (connectedChain === 'base') {
-                // Base chain - fetch Base ETH and USDC
-                promises.push(fetchBaseBalance(address));
-                promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDC_BASE, 6, RPC_ENDPOINTS.base, 'USDC_BASE'));
-                // Set other balances to N/A
-                updateBalanceDisplay('ETH', null);
-                updateBalanceDisplay('SOL', null);
-                updateBalanceDisplay('USDT_ETH', null);
-                updateBalanceDisplay('USDC_ETH', null);
-            } else {
-                // Ethereum - fetch ETH and stablecoins
-                promises.push(fetchETHBalance(address));
-                promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDT_ETH, 6, RPC_ENDPOINTS.ethereum, 'USDT_ETH'));
-                promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDC_ETH, 6, RPC_ENDPOINTS.ethereum, 'USDC_ETH'));
-                // Also fetch Base balance
-                promises.push(fetchBaseBalance(address));
-                promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDC_BASE, 6, RPC_ENDPOINTS.base, 'USDC_BASE'));
-                updateBalanceDisplay('SOL', null);
-            }
+            // EVM address - fetch all EVM chain balances
+            // Fetch ETH
+            promises.push(fetchETHBalance(address));
+            promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDT_ETH, 6, RPC_ENDPOINTS.ethereum, 'USDT_ETH'));
+            promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDC_ETH, 6, RPC_ENDPOINTS.ethereum, 'USDC_ETH'));
+            // Fetch Base balance
+            promises.push(fetchBaseBalance(address));
+            promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDC_BASE, 6, RPC_ENDPOINTS.base, 'USDC_BASE'));
+            // Fetch Avalanche balance
+            promises.push(fetchAVAXBalance(address));
+            promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDT_AVAX, 6, RPC_ENDPOINTS.avalanche, 'USDT_AVAX'));
+            promises.push(fetchERC20Balance(address, TOKEN_CONTRACTS.USDC_AVAX, 6, RPC_ENDPOINTS.avalanche, 'USDC_AVAX'));
+            // Set Solana balances to N/A for EVM wallets
+            updateBalanceDisplay('SOL', null);
             updateBalanceDisplay('USDT_SOL', null);
             updateBalanceDisplay('USDC_SOL', null);
         } else {
@@ -1161,9 +1269,12 @@ async function fetchAllBalances() {
             // Set EVM balances to N/A
             updateBalanceDisplay('ETH', null);
             updateBalanceDisplay('BASE', null);
+            updateBalanceDisplay('AVAX', null);
             updateBalanceDisplay('USDT_ETH', null);
             updateBalanceDisplay('USDC_ETH', null);
             updateBalanceDisplay('USDC_BASE', null);
+            updateBalanceDisplay('USDT_AVAX', null);
+            updateBalanceDisplay('USDC_AVAX', null);
         }
 
         await Promise.allSettled(promises);
@@ -1207,13 +1318,23 @@ function updateBalanceDisplay(token, balance) {
         }
     }
 
-    // Update header balance (for native tokens)
+    // Update header balance (for native tokens - desktop)
     const headerEl = document.getElementById(`headerBalance${token}`);
     if (headerEl) {
         if (balance === null) {
             headerEl.textContent = 'N/A';
         } else {
             headerEl.textContent = formatBalance(balance, 2);
+        }
+    }
+
+    // Update mobile balance (for native tokens)
+    const mobileEl = document.getElementById(`mobileBalance${token}`);
+    if (mobileEl) {
+        if (balance === null) {
+            mobileEl.textContent = 'N/A';
+        } else {
+            mobileEl.textContent = formatBalance(balance, 2);
         }
     }
 
@@ -1235,15 +1356,25 @@ function updateHeaderStableTotal() {
         }
     }
 
+    let stableText;
+    if (total === 0) {
+        stableText = '$0';
+    } else if (total < 0.01) {
+        stableText = '<$0.01';
+    } else {
+        stableText = '$' + total.toFixed(2).replace(/\.?0+$/, '');
+    }
+
+    // Update desktop header
     const headerStableEl = document.getElementById('headerBalanceStable');
     if (headerStableEl) {
-        if (total === 0) {
-            headerStableEl.textContent = '$0';
-        } else if (total < 0.01) {
-            headerStableEl.textContent = '<$0.01';
-        } else {
-            headerStableEl.textContent = '$' + total.toFixed(2).replace(/\.?0+$/, '');
-        }
+        headerStableEl.textContent = stableText;
+    }
+
+    // Update mobile header
+    const mobileStableEl = document.getElementById('mobileBalanceStable');
+    if (mobileStableEl) {
+        mobileStableEl.textContent = stableText;
     }
 }
 
