@@ -112,8 +112,9 @@ async fn main() -> Result<()> {
         .route("/post/:slug", get(handlers::posts::show))
         .route("/posts", get(handlers::posts::list))
         // Admin routes
-        .route("/admin/post/new", get(handlers::admin::new_post))
-        .route("/admin/post/edit/:slug", get(handlers::admin::edit_post))
+        .route("/admin/new", get(handlers::admin::new_post))
+        .route("/admin/edit/:slug", get(handlers::admin::edit_post))
+        .route("/admin/readers", get(handlers::admin::readers))
         .route("/api/admin/posts", post(handlers::admin::create_post))
         .route("/api/admin/posts/:slug", put(handlers::admin::update_post))
         .route("/api/admin/posts/:slug", delete(handlers::admin::delete_post))

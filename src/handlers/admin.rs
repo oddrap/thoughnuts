@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use chrono::Utc;
 
-use crate::{db, markdown::MarkdownParser, models::Post, AppState};
+use crate::{db, db::sqlite::ReaderInfo, markdown::MarkdownParser, models::Post, AppState};
 
 // Admin wallet addresses (lowercase)
 const ADMIN_ADDRESSES: &[&str] = &["0x360091e9e692b7775543da956b7ca6cc39bae86c"];
@@ -45,6 +45,55 @@ impl Default for PostData {
 pub struct EditorTemplate {
     pub is_edit: bool,
     pub post: PostData,
+}
+
+// Display struct for readers template
+pub struct ReaderDisplay {
+    pub short_address: String,
+    pub chain_display: String,
+    pub last_post_slug: Option<String>,
+    pub last_post_title: Option<String>,
+    pub last_read_display: Option<String>,
+    pub login_count: i64,
+    pub last_login_display: Option<String>,
+}
+
+impl From<ReaderInfo> for ReaderDisplay {
+    fn from(r: ReaderInfo) -> Self {
+        let short_address = if r.wallet_address.len() > 10 {
+            format!("{}...{}", &r.wallet_address[..6], &r.wallet_address[r.wallet_address.len()-4..])
+        } else {
+            r.wallet_address.clone()
+        };
+
+        let chain_display = r.wallet_type
+            .as_ref()
+            .map(|t| {
+                let t_lower = t.to_lowercase();
+                let first_char = t_lower.chars().next().unwrap_or('u');
+                format!("{}{}", first_char.to_uppercase(), &t_lower[1..])
+            })
+            .unwrap_or_else(|| "Unknown".to_string());
+
+        let last_read_display = r.last_read_at.map(|dt| dt.format("%Y-%m-%d %H:%M").to_string());
+        let last_login_display = r.last_login.map(|dt| dt.format("%Y-%m-%d %H:%M").to_string());
+
+        ReaderDisplay {
+            short_address,
+            chain_display,
+            last_post_slug: r.last_post_slug,
+            last_post_title: r.last_post_title,
+            last_read_display,
+            login_count: r.login_count,
+            last_login_display,
+        }
+    }
+}
+
+#[derive(Template)]
+#[template(path = "admin/readers.html")]
+pub struct ReadersTemplate {
+    pub readers: Vec<ReaderDisplay>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -103,6 +152,18 @@ pub async fn edit_post(
         }
         _ => Html("<h1>Post not found</h1>".to_string()),
     }
+}
+
+// Admin readers page
+pub async fn readers(State(state): State<Arc<AppState>>) -> Html<String> {
+    let readers = db::get_readers_with_last_post(&state.db)
+        .await
+        .unwrap_or_default()
+        .into_iter()
+        .map(ReaderDisplay::from)
+        .collect();
+    let template = ReadersTemplate { readers };
+    Html(template.render().unwrap_or_else(|e| format!("Error: {}", e)))
 }
 
 // API: Create new post

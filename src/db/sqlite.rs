@@ -387,3 +387,60 @@ pub async fn get_user_by_wallet(pool: &SqlitePool, wallet_address: &str) -> Resu
 
     Ok(user)
 }
+
+/// Reader info with last read post
+#[derive(Debug, sqlx::FromRow)]
+pub struct ReaderInfo {
+    pub wallet_address: String,
+    pub wallet_type: Option<String>,
+    pub last_login: Option<chrono::DateTime<chrono::Utc>>,
+    pub login_count: i64,
+    pub last_post_slug: Option<String>,
+    pub last_post_title: Option<String>,
+    pub last_read_at: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+/// Get all readers with their last read post
+pub async fn get_readers_with_last_post(pool: &SqlitePool) -> Result<Vec<ReaderInfo>> {
+    let readers = sqlx::query_as::<_, ReaderInfo>(
+        r#"
+        SELECT
+            u.wallet_address,
+            u.wallet_type,
+            u.last_login,
+            COALESCE(u.login_count, 0) as login_count,
+            (
+                SELECT ua.target_id
+                FROM user_activities ua
+                WHERE ua.wallet_address = u.wallet_address
+                AND ua.activity_type = 'post_view'
+                ORDER BY ua.created_at DESC
+                LIMIT 1
+            ) as last_post_slug,
+            (
+                SELECT p.title
+                FROM user_activities ua
+                JOIN posts p ON p.slug = ua.target_id
+                WHERE ua.wallet_address = u.wallet_address
+                AND ua.activity_type = 'post_view'
+                ORDER BY ua.created_at DESC
+                LIMIT 1
+            ) as last_post_title,
+            (
+                SELECT ua.created_at
+                FROM user_activities ua
+                WHERE ua.wallet_address = u.wallet_address
+                AND ua.activity_type = 'post_view'
+                ORDER BY ua.created_at DESC
+                LIMIT 1
+            ) as last_read_at
+        FROM users u
+        ORDER BY u.last_login DESC NULLS LAST
+        LIMIT 100
+        "#,
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(readers)
+}

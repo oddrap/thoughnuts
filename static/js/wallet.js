@@ -974,17 +974,15 @@ async function connectWallet(chain, walletType) {
 function updateWalletUI(address, chain) {
     const btn = document.getElementById('connectWalletBtn');
     const btnText = document.getElementById('walletBtnText');
-    const btnTextMobile = document.getElementById('walletBtnTextMobile');
     const arrow = document.getElementById('walletDropdownArrow');
     const walletIcon = document.getElementById('walletIcon');
     const adminBadge = document.getElementById('adminBadge');
     const headerBalances = document.getElementById('headerBalances');
     const headerBalancesLoading = document.getElementById('headerBalancesLoading');
     const headerBalancesContent = document.getElementById('headerBalancesContent');
-    const mobileBalancesRow = document.getElementById('mobileBalancesRow');
 
-    const shortAddress = address.substring(0, 6) + '...' + address.substring(address.length - 4);
-    const mobileShortAddress = address.substring(0, 4) + '..' + address.substring(address.length - 3);
+    // Short address: 0x12..ab
+    const shortAddress = address.substring(0, 4) + '..' + address.substring(address.length - 2);
     const chainIcons = {
         'ethereum': '⟠',
         'base': '🔵',
@@ -993,11 +991,7 @@ function updateWalletUI(address, chain) {
     };
     const chainIcon = chainIcons[chain] || '⟠';
 
-    // Desktop: full address
-    btnText.textContent = `${chainIcon} ${shortAddress}`;
-    // Mobile: shorter address
-    if (btnTextMobile) btnTextMobile.textContent = `${chainIcon} ${mobileShortAddress}`;
-
+    btnText.textContent = `${chainIcon}${shortAddress}`;
     btn.onclick = toggleWalletDropdown;
 
     // Hide wallet icon when connected
@@ -1006,28 +1000,31 @@ function updateWalletUI(address, chain) {
     // Show dropdown arrow
     if (arrow) arrow.classList.remove('hidden');
 
-    // Show header balances section with loading state (desktop)
+    // Show header balances section with loading state
     if (headerBalances) {
         headerBalances.classList.remove('hidden');
-        headerBalances.classList.add('flex');
     }
     if (headerBalancesLoading) headerBalancesLoading.classList.remove('hidden');
     if (headerBalancesContent) headerBalancesContent.classList.add('hidden');
 
-    // Show mobile balances row
-    if (mobileBalancesRow) {
-        mobileBalancesRow.classList.remove('hidden');
-    }
+    // Show admin menu and badge if admin
+    const adminMenu = document.getElementById('adminMenu');
+    const leftSpacer = document.getElementById('leftSpacer');
 
-    // Show admin badge if admin
-    if (adminBadge) {
-        if (isAdmin(address)) {
-            adminBadge.classList.remove('hidden');
-            window.isAdmin = true;
-        } else {
-            adminBadge.classList.add('hidden');
-            window.isAdmin = false;
+    if (isAdmin(address)) {
+        window.isAdmin = true;
+        if (adminMenu) {
+            adminMenu.classList.remove('hidden');
+            adminMenu.classList.add('flex');
         }
+        if (leftSpacer) leftSpacer.classList.add('hidden');
+    } else {
+        window.isAdmin = false;
+        if (adminMenu) {
+            adminMenu.classList.add('hidden');
+            adminMenu.classList.remove('flex');
+        }
+        if (leftSpacer) leftSpacer.classList.remove('hidden');
     }
 
     // Fetch balances immediately
@@ -1051,15 +1048,12 @@ async function disconnectWallet() {
 
     const btn = document.getElementById('connectWalletBtn');
     const btnText = document.getElementById('walletBtnText');
-    const btnTextMobile = document.getElementById('walletBtnTextMobile');
     const arrow = document.getElementById('walletDropdownArrow');
     const walletIcon = document.getElementById('walletIcon');
     const adminBadge = document.getElementById('adminBadge');
     const headerBalances = document.getElementById('headerBalances');
-    const mobileBalancesRow = document.getElementById('mobileBalancesRow');
 
-    btnText.textContent = 'Connect Wallet';
-    if (btnTextMobile) btnTextMobile.textContent = 'Connect';
+    btnText.textContent = 'Connect';
     btn.onclick = openWalletModal;
 
     // Show wallet icon when disconnected
@@ -1068,18 +1062,18 @@ async function disconnectWallet() {
     // Hide dropdown arrow
     if (arrow) arrow.classList.add('hidden');
 
-    // Hide admin badge
-    if (adminBadge) adminBadge.classList.add('hidden');
+    // Hide admin menu
+    const adminMenu = document.getElementById('adminMenu');
+    const leftSpacer = document.getElementById('leftSpacer');
+    if (adminMenu) {
+        adminMenu.classList.add('hidden');
+        adminMenu.classList.remove('flex');
+    }
+    if (leftSpacer) leftSpacer.classList.remove('hidden');
 
     // Hide header balances
     if (headerBalances) {
         headerBalances.classList.add('hidden');
-        headerBalances.classList.remove('flex');
-    }
-
-    // Hide mobile balances row
-    if (mobileBalancesRow) {
-        mobileBalancesRow.classList.add('hidden');
     }
 
     // Close dropdown if open
@@ -1318,23 +1312,13 @@ function updateBalanceDisplay(token, balance) {
         }
     }
 
-    // Update header balance (for native tokens - desktop)
+    // Update header balance (for native tokens)
     const headerEl = document.getElementById(`headerBalance${token}`);
     if (headerEl) {
         if (balance === null) {
             headerEl.textContent = 'N/A';
         } else {
             headerEl.textContent = formatBalance(balance, 2);
-        }
-    }
-
-    // Update mobile balance (for native tokens)
-    const mobileEl = document.getElementById(`mobileBalance${token}`);
-    if (mobileEl) {
-        if (balance === null) {
-            mobileEl.textContent = 'N/A';
-        } else {
-            mobileEl.textContent = formatBalance(balance, 2);
         }
     }
 
@@ -1365,16 +1349,10 @@ function updateHeaderStableTotal() {
         stableText = '$' + total.toFixed(2).replace(/\.?0+$/, '');
     }
 
-    // Update desktop header
+    // Update header
     const headerStableEl = document.getElementById('headerBalanceStable');
     if (headerStableEl) {
         headerStableEl.textContent = stableText;
-    }
-
-    // Update mobile header
-    const mobileStableEl = document.getElementById('mobileBalanceStable');
-    if (mobileStableEl) {
-        mobileStableEl.textContent = stableText;
     }
 }
 

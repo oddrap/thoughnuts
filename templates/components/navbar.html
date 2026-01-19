@@ -1,74 +1,62 @@
 <nav class="fixed top-0 left-0 right-0 z-50 bg-primary-950/95 backdrop-blur-sm border-b border-primary-800">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Main navbar row -->
-        <div class="flex items-center justify-between h-14 sm:h-16">
-            <!-- Left spacer for centering -->
-            <div class="w-8 sm:w-24"></div>
+        <div class="flex items-center justify-between h-12">
+            <!-- Left Side - Admin Menu (hidden by default) -->
+            <div id="adminMenu" class="hidden">
+                <div class="relative">
+                    <button onclick="toggleAdminMenu()" class="flex items-center gap-1 text-[11px] text-green-400 hover:text-green-300 px-2 py-1 rounded bg-green-900/30 hover:bg-green-900/50">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Admin
+                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <!-- Admin Dropdown -->
+                    <div id="adminDropdown" class="hidden absolute left-0 mt-2 w-40 bg-primary-800 border border-primary-700 rounded-lg shadow-xl z-50">
+                        <a href="/admin/new" class="flex items-center gap-2 px-3 py-2 text-sm text-primary-200 hover:bg-primary-700 rounded-t-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            New Post
+                        </a>
+                        <a href="/admin/readers" class="flex items-center gap-2 px-3 py-2 text-sm text-primary-200 hover:bg-primary-700 rounded-b-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                            Readers
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Left spacer when not admin -->
+            <div id="leftSpacer" class="w-16 sm:w-24"></div>
 
             <!-- Centered Title -->
             <a href="/" class="absolute left-1/2 transform -translate-x-1/2">
-                <span class="text-lg sm:text-xl font-semibold text-white">Thoughnuts</span>
+                <span class="text-lg font-semibold text-white">Thoughnuts</span>
             </a>
 
-            <!-- Right Side - Wallet Button Only -->
-            <div class="flex items-center">
-                <!-- Desktop Balance Display (hidden on mobile) -->
-                <div id="headerBalances" class="hidden items-center gap-2 mr-3">
-                    <!-- Loading State -->
-                    <div id="headerBalancesLoading" class="hidden sm:flex items-center px-2">
-                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                    </div>
-                    <!-- Balance Content (desktop only) -->
-                    <div id="headerBalancesContent" class="hidden sm:flex items-center gap-1.5">
-                        <!-- ETH -->
-                        <div class="flex items-center gap-1 bg-primary-800/80 rounded-md px-2 py-1">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16 4v8.87l7.5 3.35L16 4z" fill="#fff" fill-opacity="0.6"/><path d="M16 4L8.5 16.22l7.5-3.35V4z" fill="#fff"/></svg>
-                            <span id="headerBalanceETH" class="text-xs font-medium text-white">-</span>
-                        </div>
-                        <!-- BASE -->
-                        <div class="flex items-center gap-1 bg-primary-800/80 rounded-md px-2 py-1">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#0052FF"/><path d="M16 6c5.5 0 10 4.5 10 10s-4.5 10-10 10S6 21.5 6 16 10.5 6 16 6z" fill="#fff" fill-opacity="0.3"/></svg>
-                            <span id="headerBalanceBASE" class="text-xs font-medium text-white">-</span>
-                        </div>
-                        <!-- AVAX -->
-                        <div class="flex items-center gap-1 bg-primary-800/80 rounded-md px-2 py-1">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#E84142"/><path d="M20.5 20h-2.8l-1.7-3.1-1.7 3.1h-2.8l3.1-5.5-1.6-2.8h2.8l1.6 2.9 1.6-2.9h2.8l-1.6 2.8 3.1 5.5h-2.8z" fill="#fff"/></svg>
-                            <span id="headerBalanceAVAX" class="text-xs font-medium text-white">-</span>
-                        </div>
-                        <!-- SOL -->
-                        <div class="flex items-center gap-1 bg-primary-800/80 rounded-md px-2 py-1">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9.5 19.2a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/></svg>
-                            <span id="headerBalanceSOL" class="text-xs font-medium text-white">-</span>
-                        </div>
-                        <!-- Stablecoins Summary -->
-                        <div class="flex items-center gap-1 bg-primary-800/80 rounded-md px-2 py-1">
-                            <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#2775CA"/><path d="M16 6c5.5 0 10 4.5 10 10s-4.5 10-10 10S6 21.5 6 16 10.5 6 16 6z" fill="#fff" fill-opacity="0.3"/></svg>
-                            <span id="headerBalanceStable" class="text-xs font-medium text-white">$-</span>
-                        </div>
-                    </div>
-                </div>
-
+            <!-- Right Side - Wallet Section -->
+            <div class="flex flex-col items-end">
                 <!-- Connect Wallet Button / Dropdown -->
                 <div class="relative">
-                    <button id="connectWalletBtn" onclick="openWalletModal()" class="btn btn-secondary px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                    <button id="connectWalletBtn" onclick="openWalletModal()" class="btn btn-secondary px-2 py-1 rounded text-[11px] flex items-center gap-1">
                         <!-- Wallet Icon -->
-                        <svg id="walletIcon" class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg id="walletIcon" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
-                        <span id="walletBtnText" class="hidden sm:inline">Connect Wallet</span>
-                        <span id="walletBtnTextMobile" class="sm:hidden">Connect</span>
-                        <svg id="walletDropdownArrow" class="w-3 h-3 sm:w-4 sm:h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span id="walletBtnText">Connect</span>
+                        <svg id="walletDropdownArrow" class="w-2.5 h-2.5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
 
                     <!-- Wallet Dropdown Menu -->
                     <div id="walletDropdown" class="hidden absolute right-0 mt-2 w-72 bg-primary-800 border border-primary-700 rounded-lg shadow-xl z-50">
-                        <!-- Admin Badge (hidden by default) -->
-                        <div id="adminBadge" class="hidden px-4 py-2 border-b border-primary-700">
-                            <span class="text-xs font-medium text-green-400">Admin</span>
-                        </div>
-
                         <!-- Detailed Balances Section (in dropdown) -->
                         <div id="balancesSection" class="px-3 py-3 border-b border-primary-700">
                             <p class="text-xs text-primary-400 uppercase tracking-wide mb-2">Balances</p>
@@ -234,36 +222,41 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Mobile Balance Row (below navbar, only visible when connected on mobile) -->
-        <div id="mobileBalancesRow" class="hidden sm:hidden pb-2 -mt-1">
-            <div class="flex items-center justify-end gap-1 overflow-x-auto">
-                <!-- ETH -->
-                <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1.5 py-0.5 flex-shrink-0">
-                    <svg class="w-3 h-3" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16 4v8.87l7.5 3.35L16 4z" fill="#fff" fill-opacity="0.6"/><path d="M16 4L8.5 16.22l7.5-3.35V4z" fill="#fff"/></svg>
-                    <span id="mobileBalanceETH" class="text-[10px] font-medium text-white">-</span>
-                </div>
-                <!-- BASE -->
-                <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1.5 py-0.5 flex-shrink-0">
-                    <svg class="w-3 h-3" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#0052FF"/><path d="M16 6c5.5 0 10 4.5 10 10s-4.5 10-10 10S6 21.5 6 16 10.5 6 16 6z" fill="#fff" fill-opacity="0.3"/></svg>
-                    <span id="mobileBalanceBASE" class="text-[10px] font-medium text-white">-</span>
-                </div>
-                <!-- AVAX -->
-                <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1.5 py-0.5 flex-shrink-0">
-                    <svg class="w-3 h-3" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#E84142"/><path d="M20.5 20h-2.8l-1.7-3.1-1.7 3.1h-2.8l3.1-5.5-1.6-2.8h2.8l1.6 2.9 1.6-2.9h2.8l-1.6 2.8 3.1 5.5h-2.8z" fill="#fff"/></svg>
-                    <span id="mobileBalanceAVAX" class="text-[10px] font-medium text-white">-</span>
-                </div>
-                <!-- SOL -->
-                <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1.5 py-0.5 flex-shrink-0">
-                    <svg class="w-3 h-3" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9.5 19.2a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/></svg>
-                    <span id="mobileBalanceSOL" class="text-[10px] font-medium text-white">-</span>
-                </div>
-                <!-- Stable -->
-                <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1.5 py-0.5 flex-shrink-0">
-                    <svg class="w-3 h-3" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#2775CA"/><path d="M16 6c5.5 0 10 4.5 10 10s-4.5 10-10 10S6 21.5 6 16 10.5 6 16 6z" fill="#fff" fill-opacity="0.3"/></svg>
-                    <span id="mobileBalanceStable" class="text-[10px] font-medium text-white">$-</span>
+                <!-- Balance Row (below wallet button, only visible when connected) -->
+                <div id="headerBalances" class="hidden mt-1">
+                    <div id="headerBalancesLoading" class="flex items-center justify-end px-1">
+                        <div class="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-500"></div>
+                    </div>
+                    <div id="headerBalancesContent" class="hidden">
+                        <div class="flex items-center gap-1 overflow-x-auto">
+                            <!-- ETH -->
+                            <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1 py-0.5 flex-shrink-0">
+                                <svg class="w-2.5 h-2.5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#627EEA"/><path d="M16 4v8.87l7.5 3.35L16 4z" fill="#fff" fill-opacity="0.6"/><path d="M16 4L8.5 16.22l7.5-3.35V4z" fill="#fff"/></svg>
+                                <span id="headerBalanceETH" class="text-[9px] font-medium text-white">-</span>
+                            </div>
+                            <!-- BASE -->
+                            <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1 py-0.5 flex-shrink-0">
+                                <svg class="w-2.5 h-2.5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#0052FF"/><path d="M16 6c5.5 0 10 4.5 10 10s-4.5 10-10 10S6 21.5 6 16 10.5 6 16 6z" fill="#fff" fill-opacity="0.3"/></svg>
+                                <span id="headerBalanceBASE" class="text-[9px] font-medium text-white">-</span>
+                            </div>
+                            <!-- AVAX -->
+                            <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1 py-0.5 flex-shrink-0">
+                                <svg class="w-2.5 h-2.5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#E84142"/><path d="M20.5 20h-2.8l-1.7-3.1-1.7 3.1h-2.8l3.1-5.5-1.6-2.8h2.8l1.6 2.9 1.6-2.9h2.8l-1.6 2.8 3.1 5.5h-2.8z" fill="#fff"/></svg>
+                                <span id="headerBalanceAVAX" class="text-[9px] font-medium text-white">-</span>
+                            </div>
+                            <!-- SOL -->
+                            <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1 py-0.5 flex-shrink-0">
+                                <svg class="w-2.5 h-2.5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9.5 19.2a.6.6 0 01.42-.17h12.53a.3.3 0 01.21.51l-2.54 2.54a.6.6 0 01-.42.17H7.17a.3.3 0 01-.21-.51l2.54-2.54z" fill="#fff"/></svg>
+                                <span id="headerBalanceSOL" class="text-[9px] font-medium text-white">-</span>
+                            </div>
+                            <!-- Stable -->
+                            <div class="flex items-center gap-0.5 bg-primary-800/80 rounded px-1 py-0.5 flex-shrink-0">
+                                <svg class="w-2.5 h-2.5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#2775CA"/><path d="M16 6c5.5 0 10 4.5 10 10s-4.5 10-10 10S6 21.5 6 16 10.5 6 16 6z" fill="#fff" fill-opacity="0.3"/></svg>
+                                <span id="headerBalanceStable" class="text-[9px] font-medium text-white">$-</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -271,4 +264,20 @@
 </nav>
 
 <!-- Spacer for fixed navbar -->
-<div class="h-14 sm:h-16"></div>
+<div class="h-12"></div>
+
+<script>
+function toggleAdminMenu() {
+    const dropdown = document.getElementById('adminDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+// Close admin dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const adminMenu = document.getElementById('adminMenu');
+    const adminDropdown = document.getElementById('adminDropdown');
+    if (adminMenu && !adminMenu.contains(event.target)) {
+        adminDropdown?.classList.add('hidden');
+    }
+});
+</script>

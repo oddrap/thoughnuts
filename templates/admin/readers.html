@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Readers - Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-white">Readers</h1>
+        <a href="/" class="text-primary-400 hover:text-white text-sm">Back to Home</a>
+    </div>
+
+    <div class="card">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-primary-700">
+                        <th class="text-left py-3 px-4 text-xs uppercase tracking-wide text-primary-400">Address</th>
+                        <th class="text-left py-3 px-4 text-xs uppercase tracking-wide text-primary-400">Chain</th>
+                        <th class="text-left py-3 px-4 text-xs uppercase tracking-wide text-primary-400">Last Read</th>
+                        <th class="text-left py-3 px-4 text-xs uppercase tracking-wide text-primary-400">Visits</th>
+                        <th class="text-left py-3 px-4 text-xs uppercase tracking-wide text-primary-400">Last Active</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reader in readers %}
+                    <tr class="border-b border-primary-800 hover:bg-primary-800/50">
+                        <td class="py-3 px-4">
+                            <code class="text-xs text-blue-400 bg-primary-800 px-2 py-1 rounded">
+                                {{ reader.short_address }}
+                            </code>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="text-xs text-primary-300">{{ reader.chain_display }}</span>
+                        </td>
+                        <td class="py-3 px-4">
+                            {% if reader.last_post_title.is_some() %}
+                            <a href="/post/{{ reader.last_post_slug.as_ref().unwrap() }}" class="text-sm text-primary-200 hover:text-white">
+                                {{ reader.last_post_title.as_ref().unwrap() }}
+                            </a>
+                            {% if reader.last_read_display.is_some() %}
+                            <div class="text-[10px] text-primary-500">{{ reader.last_read_display.as_ref().unwrap() }}</div>
+                            {% endif %}
+                            {% else %}
+                            <span class="text-xs text-primary-500">No posts read</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="text-sm text-white">{{ reader.login_count }}</span>
+                        </td>
+                        <td class="py-3 px-4">
+                            {% if reader.last_login_display.is_some() %}
+                            <span class="text-xs text-primary-400">{{ reader.last_login_display.as_ref().unwrap() }}</span>
+                            {% else %}
+                            <span class="text-xs text-primary-500">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-primary-400">
+                            No readers yet
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
