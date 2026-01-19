@@ -11,17 +11,9 @@
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
                 Thoughnuts
             </h1>
-            <p class="text-lg sm:text-xl text-primary-300 max-w-2xl mx-auto mb-8 leading-relaxed">
-                {{ description }}
+            <p class="text-lg sm:text-xl text-primary-300 max-w-2xl mx-auto leading-relaxed">
+                diggin' here and there
             </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="/posts" class="btn btn-primary px-6 py-3 rounded-lg text-base font-medium">
-                    Read Posts
-                </a>
-                <button onclick="openWalletModal()" class="btn btn-secondary px-6 py-3 rounded-lg text-base font-medium">
-                    Connect Wallet
-                </button>
-            </div>
         </div>
     </div>
 </section>
@@ -32,9 +24,6 @@
         <h2 class="text-xl sm:text-2xl font-semibold text-white">
             Latest Posts
         </h2>
-        <a href="/admin/post/new" id="newPostBtn" class="hidden btn btn-primary px-4 py-2 rounded-lg text-sm font-medium">
-            + New Post
-        </a>
     </div>
 
     {% if posts.is_empty() %}
@@ -63,14 +52,9 @@
             </p>
             <div class="flex items-center justify-between">
                 <span class="text-sm text-primary-400">{{ post.author }}</span>
-                <div class="flex items-center gap-3">
-                    <a href="/admin/post/edit/{{ post.slug }}" class="admin-edit-btn hidden text-sm text-yellow-400 hover:text-yellow-300 font-medium">
-                        Edit
-                    </a>
-                    <a href="/post/{{ post.slug }}" class="text-sm text-blue-400 hover:text-blue-300 font-medium">
-                        Read more →
-                    </a>
-                </div>
+                <a href="/post/{{ post.slug }}" class="text-sm text-blue-400 hover:text-blue-300 font-medium">
+                    Read more →
+                </a>
             </div>
         </article>
         {% endfor %}
@@ -78,23 +62,4 @@
     {% endif %}
 </section>
 
-{% endblock %}
-
-{% block scripts %}
-<script>
-    // Show admin buttons if admin is connected
-    window.addEventListener('walletConnected', () => {
-        const isAdmin = window.isAdmin || false;
-        const newPostBtn = document.getElementById('newPostBtn');
-        const editBtns = document.querySelectorAll('.admin-edit-btn');
-
-        if (isAdmin) {
-            newPostBtn?.classList.remove('hidden');
-            editBtns.forEach(btn => btn.classList.remove('hidden'));
-        } else {
-            newPostBtn?.classList.add('hidden');
-            editBtns.forEach(btn => btn.classList.add('hidden'));
-        }
-    });
-</script>
 {% endblock %}

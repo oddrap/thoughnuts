@@ -37,7 +37,7 @@
                 class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 placeholder="post-url-slug"
                 value="{{ post.slug }}"
-                {% if is_edit %}readonly{% endif %}>
+                {%- if is_edit %} readonly{%- endif %}>
         </div>
 
         <div>
@@ -53,7 +53,7 @@
             <input type="text" id="postAuthor" required
                 class="w-full p-3 bg-primary-800 border border-primary-700 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 placeholder="Author name"
-                value="{% if post.author %}{{ post.author }}{% else %}Thoughnuts{% endif %}">
+                value="{% if !post.author.is_empty() %}{{ post.author }}{% else %}Thoughnuts{% endif %}">
         </div>
 
         <div>
@@ -138,7 +138,7 @@
 
 {% block scripts %}
 <script>
-    const isEdit = {{ is_edit }};
+    const isEdit = {% if is_edit %}true{% else %}false{% endif %};
     const originalSlug = '{{ post.slug }}';
 
     // Markdown toolbar functions

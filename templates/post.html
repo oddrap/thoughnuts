@@ -121,7 +121,11 @@
 
 {% block scripts %}
 <script>
+    // Set post slug on body for activity tracking
+    document.body.dataset.postSlug = '{{ post.slug }}';
+
     const postId = {{ post.id }};
+    const postSlug = '{{ post.slug }}';
     const addresses = {
         ethereum: '{{ author_eth_address }}',
         avalanche: '{{ author_avax_address }}',
@@ -270,6 +274,11 @@
                         })
                     });
 
+                    // Track tip activity
+                    if (typeof trackTipSent === 'function') {
+                        trackTipSent(postSlug, amount, selectedCurrency.toUpperCase(), txHash);
+                    }
+
                     statusEl.innerHTML = '<span class="text-green-400">Sent! Thank you!</span>';
                     setTimeout(resetTip, 3000);
                 }
@@ -337,6 +346,11 @@
                             tx_hash: txHash
                         })
                     });
+
+                    // Track tip activity
+                    if (typeof trackTipSent === 'function') {
+                        trackTipSent(postSlug, amount, selectedCurrency.toUpperCase(), txHash);
+                    }
 
                     statusEl.innerHTML = '<span class="text-green-400">Sent! Thank you!</span>';
                     setTimeout(resetTip, 3000);

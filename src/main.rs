@@ -119,6 +119,7 @@ async fn main() -> Result<()> {
         .route("/api/admin/posts/:slug", delete(handlers::admin::delete_post))
         .nest("/api/auth", routes::auth::router())
         .nest("/api/tips", routes::tipping::router())
+        .nest("/api/activity", routes::activity::router())
         .nest_service("/static", ServeDir::new("static"))
         .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::permissive())

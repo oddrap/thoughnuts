@@ -17,14 +17,7 @@ fn is_admin(address: &str) -> bool {
     ADMIN_ADDRESSES.contains(&address.to_lowercase().as_str())
 }
 
-#[derive(Template)]
-#[template(path = "admin/editor.html")]
-pub struct EditorTemplate {
-    pub is_edit: bool,
-    pub post: PostData,
-}
-
-#[derive(Default, Clone)]
+#[derive(Clone)]
 pub struct PostData {
     pub slug: String,
     pub title: String,
@@ -32,6 +25,26 @@ pub struct PostData {
     pub author: String,
     pub tags: String,
     pub content: String,
+}
+
+impl Default for PostData {
+    fn default() -> Self {
+        Self {
+            slug: String::new(),
+            title: String::new(),
+            description: String::new(),
+            author: String::new(),
+            tags: String::new(),
+            content: String::new(),
+        }
+    }
+}
+
+#[derive(Template)]
+#[template(path = "admin/editor.html")]
+pub struct EditorTemplate {
+    pub is_edit: bool,
+    pub post: PostData,
 }
 
 #[derive(Debug, Deserialize)]

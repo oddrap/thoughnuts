@@ -2,7 +2,7 @@ use anyhow::Result;
 use chrono::Utc;
 use sqlx::SqlitePool;
 
-use crate::models::{Post, Tip, User};
+use crate::models::{Post, Tip, User, UserActivity};
 
 pub async fn get_all_posts(pool: &SqlitePool) -> Result<Vec<Post>> {
     let posts = sqlx::query_as::<_, Post>(
@@ -230,4 +230,160 @@ pub async fn upsert_post(pool: &SqlitePool, post: &Post) -> Result<i64> {
     } else {
         create_post(pool, post).await
     }
+}
+
+// =============================================
+// USER ACTIVITY TRACKING FUNCTIONS
+// =============================================
+
+/// Create a new user activity record
+pub async fn create_activity(
+    pool: &SqlitePool,
+    wallet_address: &str,
+    activity_type: &str,
+    target_type: Option<&str>,
+    target_id: Option<&str>,
+    metadata: Option<&str>,
+    chain: Option<&str>,
+    ip_hash: Option<&str>,
+    user_agent: Option<&str>,
+) -> Result<i64> {
+    // Try to find user_id for this wallet
+    let user: Option<(i64,)> = sqlx::query_as(
+        "SELECT id FROM users WHERE wallet_address = ? LIMIT 1"
+    )
+    .bind(wallet_address)
+    .fetch_optional(pool)
+    .await?;
+
+    let user_id = user.map(|u| u.0);
+
+    let result = sqlx::query(
+        r#"
+        INSERT INTO user_activities (user_id, wallet_address, activity_type, target_type, target_id, metadata, chain, ip_hash, user_agent, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        "#,
+    )
+    .bind(user_id)
+    .bind(wallet_address)
+    .bind(activity_type)
+    .bind(target_type)
+    .bind(target_id)
+    .bind(metadata)
+    .bind(chain)
+    .bind(ip_hash)
+    .bind(user_agent)
+    .bind(Utc::now())
+    .execute(pool)
+    .await?;
+
+    Ok(result.last_insert_rowid())
+}
+
+/// Get activities for a specific user
+pub async fn get_user_activities(
+    pool: &SqlitePool,
+    wallet_address: &str,
+    limit: i64,
+) -> Result<Vec<UserActivity>> {
+    let activities = sqlx::query_as::<_, UserActivity>(
+        r#"
+        SELECT * FROM user_activities
+        WHERE wallet_address = ?
+        ORDER BY created_at DESC
+        LIMIT ?
+        "#,
+    )
+    .bind(wallet_address)
+    .bind(limit)
+    .fetch_all(pool)
+    .await?;
+
+    Ok(activities)
+}
+
+/// Get activities by type
+pub async fn get_activities_by_type(
+    pool: &SqlitePool,
+    activity_type: &str,
+    limit: i64,
+) -> Result<Vec<UserActivity>> {
+    let activities = sqlx::query_as::<_, UserActivity>(
+        r#"
+        SELECT * FROM user_activities
+        WHERE activity_type = ?
+        ORDER BY created_at DESC
+        LIMIT ?
+        "#,
+    )
+    .bind(activity_type)
+    .bind(limit)
+    .fetch_all(pool)
+    .await?;
+
+    Ok(activities)
+}
+
+/// Get post view count from activities (more accurate than views column)
+pub async fn get_post_view_count(pool: &SqlitePool, post_slug: &str) -> Result<i64> {
+    let result: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*) FROM user_activities
+        WHERE activity_type = 'post_view' AND target_id = ?
+        "#,
+    )
+    .bind(post_slug)
+    .fetch_one(pool)
+    .await?;
+
+    Ok(result.0)
+}
+
+/// Get unique viewers for a post
+pub async fn get_post_unique_viewers(pool: &SqlitePool, post_slug: &str) -> Result<i64> {
+    let result: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(DISTINCT wallet_address) FROM user_activities
+        WHERE activity_type = 'post_view' AND target_id = ?
+        "#,
+    )
+    .bind(post_slug)
+    .fetch_one(pool)
+    .await?;
+
+    Ok(result.0)
+}
+
+/// Increment user login count
+pub async fn increment_user_login_count(pool: &SqlitePool, user_id: i64) -> Result<()> {
+    sqlx::query("UPDATE users SET login_count = login_count + 1, last_login = ? WHERE id = ?")
+        .bind(Utc::now())
+        .bind(user_id)
+        .execute(pool)
+        .await?;
+
+    Ok(())
+}
+
+/// Update user preferred chain
+pub async fn update_user_preferred_chain(pool: &SqlitePool, user_id: i64, chain: &str) -> Result<()> {
+    sqlx::query("UPDATE users SET preferred_chain = ? WHERE id = ?")
+        .bind(chain)
+        .bind(user_id)
+        .execute(pool)
+        .await?;
+
+    Ok(())
+}
+
+/// Get user by wallet address (any chain)
+pub async fn get_user_by_wallet(pool: &SqlitePool, wallet_address: &str) -> Result<Option<User>> {
+    let user = sqlx::query_as::<_, User>(
+        "SELECT * FROM users WHERE wallet_address = ? LIMIT 1",
+    )
+    .bind(wallet_address)
+    .fetch_optional(pool)
+    .await?;
+
+    Ok(user)
 }
